@@ -2,18 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\MemberResource;
 use App\Models\Coven;
 use App\Models\Email;
-use App\Models\User;
-use App\Services\AuthService;
 use App\Services\MembersService;
-use DomainException;
-use Firebase\JWT\JWT;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Member;
-use Illuminate\Support\Facades\DB;
 
 
 class MembersController extends Controller
@@ -23,6 +17,11 @@ class MembersController extends Controller
     public function __construct(MembersService $membersService)
     {
         $this->membersService = $membersService;
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        return $this->membersService->getAllMembers($request);
     }
 
     public function store(Request $request): JsonResponse

@@ -82,4 +82,19 @@ class MembersService
 
         return response()->json(['error' => $this->validator->getMessage()], 400);
     }
+
+    public function getAllMembers(Request $request): JsonResponse
+    {
+        $members = Member::query()->get();
+
+        if ($members->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'data' => $members->toArray()
+            ]);
+        }
+        $this->validator->addError('No members found.');
+
+        return response()->json(['error' => $this->validator->getMessage()], 400);
+    }
 }

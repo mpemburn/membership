@@ -35,6 +35,23 @@ class MemberTest extends TestCase
         $this->assertDatabaseHas('members', $attributes);
     }
 
+    public function test_can_update_member(): void
+    {
+        $this->withoutExceptionHandling();
+        $member = Member::factory()->create();
+        $attributes = $member->toArray();
+
+        $this->post('api/member', $attributes);
+        $this->assertDatabaseHas('members', $attributes);
+
+        $attributes['first_name'] = 'Sally';
+
+        $response = $this->put('/api/member_update/' . $member->id, $attributes);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('members', $attributes);
+    }
+
     public function test_can_get_member_by_id(): void
     {
         $this->withoutExceptionHandling();
@@ -53,21 +70,22 @@ class MemberTest extends TestCase
         ]);
     }
 
-    public function test_can_update_member(): void
+    public function test_can_get_all_members(): void
     {
         $this->withoutExceptionHandling();
-        $member = Member::factory()->create();
-        $attributes = $member->toArray();
 
-        $this->post('api/member', $attributes);
-        $this->assertDatabaseHas('members', $attributes);
+        $members = Member::factory()->count(5)->make();
 
-        $attributes['first_name'] = 'Sally';
+        $aMember = $members->first();
 
-        $response = $this->put('/api/member_update/' . $member->id, $attributes);
+        $members->each(function(Member $member) {
+            $this->post('/api/member', $member->toArray());
+        });
+
+        $this->assertDatabaseHas('members', $aMember->toArray());
+
+        $response = $this->get('/api/members');
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('members', $attributes);
     }
-
 }
