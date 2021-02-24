@@ -24,3 +24,6 @@ yarn-error.log
 /resources/.DS_Store
 /public/js/app.js
 /public/css/app.css
+/app/Helpers/DebugHelper.php
+/app/Models/Legacy/
+.idea

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
-
+use App\Helpers\DebugHelper;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,6 +27,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/roles', AdminController::class . '@roles')->name('roles');
     Route::get('/permissions', AdminController::class . '@permissions')->name('permissions');
     Route::get('/user_roles', AdminController::class . '@userRoles')->name('user_roles');
+});
+
+Route::get('test', function () {
+   DebugHelper::test();
 });
 
 require __DIR__ . '/auth.php';
