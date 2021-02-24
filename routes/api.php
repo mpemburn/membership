@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\MembersController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserRolesController;
@@ -32,4 +34,18 @@ Route::middleware('auth:api')->group( function () {
 
     Route::post('/user_roles', UserRolesController::class . '@edit');
     Route::get('/user_roles/assigned', UserRolesController::class . '@getAssigned');
+
+    Route::post('/member', MembersController::class . '@store');
+    Route::post('/member_email', MembersController::class . '@addEmailToMember');
+    Route::post('/member_coven', MembersController::class . '@addMemberToCoven');
+    Route::put('member_update/{member_id}', [MembersController::class, 'updateMember']);
+
+    Route::get('/members', MembersController::class . '@show');
+    Route::get('/get_member/{id}', function ($id) {
+        return new MemberResource(Member::findOrFail($id));
+    });
+//
+//    Route::get('/covens', CovenController::class . '@show');
+//    Route::get('/get_auth', AuthController::class . '@getAuthToken');
+
 });
