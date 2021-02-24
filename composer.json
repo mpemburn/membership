@@ -19,6 +19,7 @@
         "spatie/laravel-permission": "^4.0"
     },
     "require-dev": {
+        "awssat/tailwindo": "^3.0",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
         "kint-php/kint": "^3.3",
