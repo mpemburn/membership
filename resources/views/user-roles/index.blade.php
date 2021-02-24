@@ -11,6 +11,9 @@
                 User
             </th>
             <th>
+                Email
+            </th>
+            <th>
                 Roles
             </th>
             <th>
@@ -23,6 +26,9 @@
                 <tr class="cursor-pointer" id="{!! $user->id !!}" data-name="{!! $user->name !!}">
                     <td>
                         {!! $user->name !!}
+                    </td>
+                    <td>
+                        {!! $user->email !!}
                     </td>
                     <td>
                         <ul>
