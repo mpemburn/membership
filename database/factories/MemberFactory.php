@@ -28,6 +28,7 @@ class MemberFactory extends Factory
         return [
             'active' => $this->faker->numberBetween(0, 1),
             'user_id' => User::factory(),
+            'email' => $this->faker->email,
             'prefix_id' => Prefix::factory(),
             'first_name' => $this->faker->firstName,
             'middle_name' =>  $this->faker->firstName,

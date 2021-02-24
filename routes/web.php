@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
-use App\Helpers\DebugHelper;
+use App\Helpers\MigrationHelper;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -30,7 +30,7 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 Route::get('test', function () {
-   DebugHelper::migrateFromLegacyMembers();
+    MigrationHelper::run();
 });
 
 require __DIR__ . '/auth.php';

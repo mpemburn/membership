@@ -35,6 +35,7 @@ class Member extends Model
     protected $fillable = [
         'active',
         'user_id',
+        'email',
         'prefix_id',
         'first_name',
         'middle_name',
