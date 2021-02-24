@@ -18,56 +18,52 @@ class MemberTest extends TestCase
         parent::setUp();
         // Do artisan migrate:refresh on test database
         $this->refreshDatabase();
-        $this->setAttributes();
+
         (new DatabaseSeeder())->call(MemberSeeder::class);
     }
 
-    public function testUserCanCreateMember(): void
+    public function test_can_create_member(): void
     {
         $this->withoutExceptionHandling();
 
-        $this->post('/api/member', $this->attributes);
+        $member = Member::factory()->create();
+        $attributes = $member->toArray();
 
-        $this->assertDatabaseHas('members', $this->attributes);
+        $response = $this->post('/api/member', $attributes);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('members', $attributes);
     }
 
-//    public function testCanRetrieveMembers(): void
-//    {
-//        $this->withoutExceptionHandling();
-//
-//        $response = $this->json('GET', '/api/members');
-//
-//        $response->assertStatus(200);
-//        $response->assertJsonStructure([
-//            'data' => [
-//                '*' => array_keys((new Member())->toArray())
-//            ]
-//        ]);
-//    }
-//
-//    public function testCanUpdateMember(): void
-//    {
-//        $this->withoutExceptionHandling();
-//        $member = Member::factory()->create();
-//        $this->post('/member', $member->toArray());
-//        $this->assertDatabaseHas('members', $member->toArray());
-//
-//        $member->first_name = 'Bill';
-//
-//        $this->putJson('/api/member_update/' . $member->id, $member->toArray());
-//
-//        $this->assertDatabaseHas('members', $member->toArray());
-//    }
-//
-    protected function setAttributes(): void
+    public function test_can_retrieve_members(): void
     {
-        $faker = Factory::create();
+        $this->withoutExceptionHandling();
 
-        $this->attributes = [
-            'active' => 1,
-            'first_name' => $faker->firstName,
-            'last_name' => $faker->lastName,
-            'member_since_date' => $faker->date()
-        ];
+        $response = $this->json('GET', '/api/members');
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'data' => [
+                '*' => array_keys((new Member())->toArray())
+            ]
+        ]);
     }
+
+    public function test_can_update_member(): void
+    {
+        $this->withoutExceptionHandling();
+        $member = Member::factory()->create();
+        $attributes = $member->toArray();
+
+        $this->post('api/member', $attributes);
+        $this->assertDatabaseHas('members', $attributes);
+
+        $attributes['first_name'] = 'Sally';
+
+        $response = $this->put('/api/member_update/' . $member->id, $attributes);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('members', $attributes);
+    }
+
 }

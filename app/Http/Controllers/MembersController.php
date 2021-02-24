@@ -7,6 +7,7 @@ use App\Models\Coven;
 use App\Models\Email;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\MembersService;
 use DomainException;
 use Firebase\JWT\JWT;
 use Illuminate\Http\JsonResponse;
@@ -17,17 +18,16 @@ use Illuminate\Support\Facades\DB;
 
 class MembersController extends Controller
 {
-    public function store(Request $request)
+    protected MembersService $membersService;
+
+    public function __construct(MembersService $membersService)
     {
-        if (true) {
-            $data = collect($request->all())->except('auth_token');
+        $this->membersService = $membersService;
+    }
 
-            return Member::query()->create($data->toArray());
-        }
-
-        return response()->json([
-            'error' => 'Unauthorized'
-        ], 403);
+    public function store(Request $request): JsonResponse
+    {
+        return $this->membersService->create($request);
     }
 
     public function show(Request $request): JsonResponse
