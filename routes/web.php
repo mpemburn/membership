@@ -30,7 +30,7 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 Route::get('test', function () {
-   DebugHelper::test();
+   DebugHelper::migrateFromLegacyMembers();
 });
 
 require __DIR__ . '/auth.php';

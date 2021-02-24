@@ -25,5 +25,4 @@ yarn-error.log
 /public/js/app.js
 /public/css/app.css
 /app/Helpers/DebugHelper.php
-/app/Models/Legacy/
 .idea
