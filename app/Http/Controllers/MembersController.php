@@ -30,29 +30,14 @@ class MembersController extends Controller
         return $this->membersService->create($request);
     }
 
-    public function show(Request $request): JsonResponse
+    public function show(int $memberId): JsonResponse
     {
-        $authToken = $request->get('auth_token');
-
-        if (true) {
-            $membersData = Member::all();
-
-            return response()->json([
-                'data' => $membersData->toArray(),
-                'count' => $membersData->count()
-            ], 200);
-        }
-
-        return response()->json([
-            'error' => 'Unauthorized access'
-        ], 401);
+        return $this->membersService->getMember($memberId);
     }
 
-    public function updateMember(Request $request, $id): void
+    public function updateMember(Request $request, $id): JsonResponse
     {
-        $member = Member::query()->find($id);
-
-        $member->update($request->all());
+        return $this->membersService->update($request);
     }
 
     public function addEmailToMember(Request $request): void

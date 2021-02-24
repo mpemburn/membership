@@ -40,10 +40,8 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/member_coven', MembersController::class . '@addMemberToCoven');
     Route::put('member_update/{member_id}', [MembersController::class, 'updateMember']);
 
-    Route::get('/members', MembersController::class . '@show');
-    Route::get('/get_member/{id}', function ($id) {
-        return new MemberResource(Member::findOrFail($id));
-    });
+    Route::get('/members', MembersController::class . '@index');
+    Route::get('/member/{id}', MembersController::class . '@show');
 //
 //    Route::get('/covens', CovenController::class . '@show');
 //    Route::get('/get_auth', AuthController::class . '@getAuthToken');

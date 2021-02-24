@@ -35,11 +35,15 @@ class MemberTest extends TestCase
         $this->assertDatabaseHas('members', $attributes);
     }
 
-    public function test_can_retrieve_members(): void
+    public function test_can_get_member_by_id(): void
     {
         $this->withoutExceptionHandling();
 
-        $response = $this->json('GET', '/api/members');
+        $member = Member::factory()->create();
+        $attributes = $member->toArray();
+        $this->post('/api/member', $attributes);
+
+        $response = $this->get('/api/member/' . $member->id);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([

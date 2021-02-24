@@ -49,7 +49,7 @@ class MembersService
         ])) {
             try {
                 $memberId = $request->get('id');
-                $data = collect($request->all());
+                $data = $request->all();
                 $member = Member::find($memberId);
                 $member->update($data);
                 $member->save();
@@ -68,4 +68,18 @@ class MembersService
         ]);
     }
 
+    public function getMember(string $memberId): JsonResponse
+    {
+        $member = Member::find($memberId);
+        if ($member->exists()) {
+            return response()->json([
+                'success' => true,
+                'data' => $member->toArray()
+            ]);
+        }
+
+        $this->validator->addError('Member not found.');
+
+        return response()->json(['error' => $this->validator->getMessage()], 400);
+    }
 }
