@@ -9,6 +9,12 @@ namespace App\Models\Legacy;
  * @method static \Illuminate\Database\Eloquent\Builder|TblTask newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TblTask query()
  * @mixin \Eloquent
+ * @property int $TaskID
+ * @property string $Task
+ * @property string $Description
+ * @method static \Illuminate\Database\Eloquent\Builder|TblTask whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TblTask whereTask($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TblTask whereTaskID($value)
  */
 class TblTask extends LegacyModel
 {

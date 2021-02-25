@@ -9,6 +9,18 @@ namespace App\Models\Legacy;
  * @method static \Illuminate\Database\Eloquent\Builder|TblMenuContext newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TblMenuContext query()
  * @mixin \Eloquent
+ * @property int $MenuContextID
+ * @property int|null $MenuID
+ * @property string|null $MenuContext
+ * @property string|null $AvailableTo
+ * @property string|null $Task
+ * @property int|null $Precedence
+ * @method static \Illuminate\Database\Eloquent\Builder|TblMenuContext whereAvailableTo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TblMenuContext whereMenuContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TblMenuContext whereMenuContextID($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TblMenuContext whereMenuID($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TblMenuContext wherePrecedence($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TblMenuContext whereTask($value)
  */
 class TblMenuContext extends LegacyModel
 {

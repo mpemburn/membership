@@ -9,6 +9,12 @@ namespace App\Models\Legacy;
  * @method static \Illuminate\Database\Eloquent\Builder|TblEmailExtension newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TblEmailExtension query()
  * @mixin \Eloquent
+ * @property string $Extension
+ * @property string $Description
+ * @property string $Type
+ * @method static \Illuminate\Database\Eloquent\Builder|TblEmailExtension whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TblEmailExtension whereExtension($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TblEmailExtension whereType($value)
  */
 class TblEmailExtension extends LegacyModel
 {
