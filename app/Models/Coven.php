@@ -17,6 +17,8 @@ class Coven extends Model
         'abbreviation',
         'wheel',
         'element',
+        'tool',
+        'inception_date',
     ];
 
     public function members(): HasMany
