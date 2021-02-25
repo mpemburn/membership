@@ -20,6 +20,7 @@
     },
     "require-dev": {
         "awssat/tailwindo": "^3.0",
+        "barryvdh/laravel-ide-helper": "^2.9",
         "facade/ignition": "^2.5",
         "fakerphp/faker": "^1.9.1",
         "kint-php/kint": "^3.3",
