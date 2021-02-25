@@ -13,6 +13,10 @@ use App\Models\Legacy\LegacyTitle;
 use App\Models\Legacy\LegacyUser;
 use App\Models\Legacy\LegacyMember;
 use App\Models\Member;
+use App\Models\Order;
+use App\Models\Prefix;
+use App\Models\State;
+use App\Models\Suffix;
 use App\Models\User;
 use App\Models\Wheel;
 use Carbon\Carbon;
@@ -45,10 +49,39 @@ class MigrationHelper
         'Aries'
     ];
 
-    protected const COVEN_EXCLUDE = [
+    protected const ORDERS_IN_LEGACY_COVEN_TABLE = [
         'ELD',
         'OWS',
         'FOA'
+    ];
+
+    protected const PREFIXES = [
+        'Ms.',
+        'Mr.',
+        'Mx.',
+        'Dr.',
+        'Prof.',
+        'Col.',
+        'Sir',
+        'c/o',
+    ];
+
+    protected const SUFFIXES = [
+        'Jr.',
+        'Sr.',
+        'II',
+        'III',
+        'III',
+        'MD',
+        'DDS',
+        'PA',
+        'JD',
+        'OD',
+        'President',
+        'CEO',
+        'G.P.',
+        'P.A.',
+        'Partner',
     ];
 
     public static function run(): void
@@ -97,8 +130,20 @@ class MigrationHelper
         });
     }
 
-    public function populateSubTables()
+    public function populateSubTables(): void
     {
+        collect(self::SUFFIXES)->each(static function ($suffix) {
+            Suffix::firstOrCreate([
+                'suffix' => $suffix
+            ]);
+        });
+
+        collect(self::PREFIXES)->each(static function ($prefix) {
+            Prefix::firstOrCreate([
+                'prefix' => $prefix
+            ]);
+        });
+
         collect(self::ELEMENTS)->each(static function ($tool, $element) {
             Element::firstOrCreate([
                 'tool' => $tool,
@@ -113,29 +158,44 @@ class MigrationHelper
         });
 
         LegacyCoven::all()->each(function (LegacyCoven $legacyCoven) {
-            if (in_array($legacyCoven->Coven, self::COVEN_EXCLUDE, true)) {
-                return;
+            if (in_array($legacyCoven->Coven, self::ORDERS_IN_LEGACY_COVEN_TABLE, true)) {
+                Order::firstOrCreate([
+                    'abbreviation' => $legacyCoven->Coven,
+                    'name' => $legacyCoven->CovenFullName,
+                    'description' => null,
+                    'leader_member_id' => null,
+                ]);
+            } else {
+                Coven::firstOrCreate([
+                    'name' => $legacyCoven->CovenFullName,
+                    'abbreviation' => $legacyCoven->Coven,
+                    'wheel' => $legacyCoven->Wheel,
+                    'element' => $legacyCoven->Element,
+                    'tool' => $legacyCoven->Tool,
+                    'inception_date' => $this->getDate($legacyCoven->InceptionDate),
+                ]);
             }
-            Coven::firstOrCreate([
-                'name' => $legacyCoven->CovenFullName,
-                'abbreviation' => $legacyCoven->Coven,
-                'wheel' => $legacyCoven->Wheel,
-                'element' => $legacyCoven->Element,
-                'tool' => $legacyCoven->Tool,
-                'inception_date' => $this->getDate($legacyCoven->InceptionDate),
-            ]);
         });
         LegacyGuild::all()->each(function (LegacyGuild $legacyGuild) {
+            $leaderMember = LegacyMember::find($legacyGuild->LeaderMemberID);
+            $newMember = Member::where('email', '=', $leaderMember->Email_Address)
+                ->first();
+            Order::firstOrCreate([
+                'abbreviation' => $legacyGuild->GuildID,
+                'name' => $legacyGuild->GuildName,
+                'description' => $legacyGuild->Description,
+                'leader_member_id' => $newMember->id ?? null,
+            ]);
 
         });
         LegacyState::all()->each(function (LegacyState $legacyState) {
-
-        });
-        LegacySuffix::all()->each(function (LegacySuffix $legacySuffix) {
-
-        });
-        LegacyTitle::all()->each(function (LegacyTitle $legacyTitle) {
-
+//            !d($legacyState->toArray());
+            State::firstOrCreate([
+                'abbreviation' => $legacyState->Abbrev,
+                'name' => $legacyState->State,
+                'country' => $legacyState->Country,
+                'is_local' => $legacyState->Local
+            ]);
         });
     }
 
