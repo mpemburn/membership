@@ -4,6 +4,11 @@ namespace App\Models\Legacy;
 
 /**
  * Class AuditLog
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyAuditLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyAuditLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyAuditLog query()
+ * @mixin \Eloquent
  */
 class LegacyAuditLog extends LegacyModel
 {

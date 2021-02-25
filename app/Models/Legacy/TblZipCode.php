@@ -4,6 +4,11 @@ namespace App\Models\Legacy;
 
 /**
  * Class TblZipCode
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|TblZipCode newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TblZipCode newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TblZipCode query()
+ * @mixin \Eloquent
  */
 class TblZipCode extends LegacyModel
 {

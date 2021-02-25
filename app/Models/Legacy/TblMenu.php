@@ -4,6 +4,11 @@ namespace App\Models\Legacy;
 
 /**
  * Class TblMenu
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|TblMenu newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TblMenu newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TblMenu query()
+ * @mixin \Eloquent
  */
 class TblMenu extends LegacyModel
 {

@@ -4,6 +4,11 @@ namespace App\Models\Legacy;
 
 /**
  * Class TblPermission
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|TblPermission newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TblPermission newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TblPermission query()
+ * @mixin \Eloquent
  */
 class TblPermission extends LegacyModel
 {

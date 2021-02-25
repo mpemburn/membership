@@ -16,6 +16,109 @@ use DB;
 
 /**
  * Class Member
+ *
+ * @property int $MemberID
+ * @property int $Active
+ * @property string|null $Member_Since_Date
+ * @property string|null $Member_End_Date
+ * @property string|null $Last_Name
+ * @property string|null $First_Name
+ * @property string|null $Middle_Name
+ * @property string|null $Suffix
+ * @property string|null $Title
+ * @property string|null $Address1
+ * @property string|null $Address2
+ * @property string|null $Magickal_Name
+ * @property string|null $City
+ * @property string|null $State
+ * @property string|null $Zip
+ * @property string|null $Home_Phone
+ * @property string|null $Work_Phone
+ * @property string|null $Cell_Phone
+ * @property string|null $Fax_Phone
+ * @property int|null $Primary_Phone
+ * @property string|null $Email_Address
+ * @property string|null $Birth_Date
+ * @property string|null $Birth_Time
+ * @property string|null $Birth_Place
+ * @property int|null $Degree
+ * @property string|null $First_Degree_Date
+ * @property string|null $Second_Degree_Date
+ * @property string|null $Third_Degree_Date
+ * @property string|null $Fourth_Degree_Date
+ * @property string|null $Fifth_Degree_Date
+ * @property int|null $Bonded
+ * @property string|null $Bonded_Date
+ * @property int $Solitary
+ * @property string|null $Solitary_Date
+ * @property string|null $Coven
+ * @property string|null $LeadershipRole
+ * @property string|null $Leadership_Date
+ * @property string|null $BoardRole
+ * @property string|null $BoardRole_Expiry_Date
+ * @property string|null $Comments
+ * @property string|null $UserLogon
+ * @property string|null $UserPassword
+ * @property string|null $InitialPassword
+ * @property int $Security_Question_ID
+ * @property string|null $Security_Answer
+ * @property int|null $UserTimeZone
+ * @property int|null $LoginEnabled
+ * @property string|null $LastOnlineTime
+ * @property int $PasswordWarnings
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember query()
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereAddress1($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereAddress2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereBirthDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereBirthPlace($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereBirthTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereBoardRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereBoardRoleExpiryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereBonded($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereBondedDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereCellPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereComments($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereCoven($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereDegree($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereEmailAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereFaxPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereFifthDegreeDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereFirstDegreeDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereFirstName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereFourthDegreeDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereHomePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereInitialPassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereLastName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereLastOnlineTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereLeadershipDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereLeadershipRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereLoginEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereMagickalName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereMemberEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereMemberID($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereMemberSinceDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereMiddleName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember wherePasswordWarnings($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember wherePrimaryPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereSecondDegreeDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereSecurityAnswer($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereSecurityQuestionID($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereSolitary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereSolitaryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereSuffix($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereThirdDegreeDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereUserLogon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereUserPassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereUserTimeZone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereWorkPhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LegacyMember whereZip($value)
+ * @mixin \Eloquent
  */
 class LegacyMember extends LegacyModel
 {

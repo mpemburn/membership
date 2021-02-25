@@ -4,6 +4,11 @@ namespace App\Models\Legacy;
 
 /**
  * Class TblUserSession
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|TblUserSession newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TblUserSession newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TblUserSession query()
+ * @mixin \Eloquent
  */
 class TblUserSession extends LegacyModel
 {
