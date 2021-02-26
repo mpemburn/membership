@@ -25,6 +25,7 @@ use App\Models\Wheel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class MigrationHelper
@@ -104,13 +105,17 @@ class MigrationHelper
     public static function run(): void
     {
         $instance = new static();
+        DB::statement("SET foreign_key_checks=0");
+        $instance->populateSubTables();
         $instance->migrateFromLegacyUsers();
         $instance->migrateFromLegacyMembers();
-        $instance->populateSubTables();
+        $instance->populateDependentTables();
+        DB::statement("SET foreign_key_checks=1");
     }
 
     public function migrateFromLegacyUsers(): void
     {
+        User::truncate();
         LegacyUser::all()->each(static function (LegacyUser $legacyUser) {
             $fromLegacy = $legacyUser->toArray();
             unset($fromLegacy['member_id']);
@@ -124,52 +129,55 @@ class MigrationHelper
 
     public function migrateFromLegacyMembers(): void
     {
+        Member::truncate();
         LegacyMember::all()->each(function (LegacyMember $legacyMember) {
             $fromLegacy = $legacyMember->toArray();
-            if (!Member::query()->where('email', '=', $legacyMember->Email_Address)->exists()) {
-                $emailAddresses = $this->extractEmailAddresses($legacyMember->Email_Address);
+            $emailAddresses = $this->extractEmailAddresses($legacyMember->Email_Address);
 //                !d($legacyMember->First_Name, $legacyMember->Last_Name);
-                $member = Member::create([
-                    'active' => $legacyMember->Active,
-                    'user_id' => $this->getUserIdFromEmail($legacyMember->Email_Address),
-                    'email' => $emailAddresses->first(),
-                    'first_name' => $legacyMember->First_Name,
-                    'middle_name' => $legacyMember->Middle_Name,
-                    'last_name' => $legacyMember->Last_Name,
-                    'magickal_name' => $legacyMember->Magickal_Name,
-                    'member_since_date' => $legacyMember->Member_Since_Date,
-                    'member_end_date' => $legacyMember->Member_End_Date,
-                    'date_of_birth' => $legacyMember->Birth_Date,
-                    'time_of_birth' => $this->getBirthTime($legacyMember->Birth_Time),
-                    'place_of_birth' => $legacyMember->Birth_Place,
-                ]);
-                $this->createEmailAddressesForMember($member, $emailAddresses);
-                $this->createMailingAddressesForMember($member, $legacyMember);
-                $this->createDegreesForMember($member, $legacyMember);
-            }
+            $member = Member::firstOrCreate([
+                'active' => $legacyMember->Active,
+                'user_id' => $this->getUserIdFromEmail($legacyMember->Email_Address),
+                'email' => $emailAddresses->first(),
+                'first_name' => $legacyMember->First_Name,
+                'middle_name' => $legacyMember->Middle_Name,
+                'last_name' => $legacyMember->Last_Name,
+                'magickal_name' => $legacyMember->Magickal_Name,
+                'member_since_date' => $legacyMember->Member_Since_Date,
+                'member_end_date' => $legacyMember->Member_End_Date,
+                'date_of_birth' => $legacyMember->Birth_Date,
+                'time_of_birth' => $this->getBirthTime($legacyMember->Birth_Time),
+                'place_of_birth' => $legacyMember->Birth_Place,
+            ]);
+            $this->createEmailAddressesForMember($member, $emailAddresses);
+            $this->createMailingAddressesForMember($member, $legacyMember);
+            $this->createDegreesForMember($member, $legacyMember);
         });
     }
 
     public function populateSubTables(): void
     {
+        Suffix::truncate();
         collect(self::SUFFIXES)->each(static function ($suffix) {
             Suffix::firstOrCreate([
                 'suffix' => $suffix
             ]);
         });
 
+        Prefix::truncate();
         collect(self::PREFIXES)->each(static function ($prefix) {
             Prefix::firstOrCreate([
                 'prefix' => $prefix
             ]);
         });
 
+        AddressType::truncate();
         collect(self::ADDRESS_TYPES)->each(static function ($type) {
             AddressType::firstOrCreate([
                 'type' => $type
             ]);
         });
 
+        DegreeType::truncate();
         collect(self::DEGREE_TYPES)->each(static function ($description, $degree) {
             DegreeType::firstOrCreate([
                 'degree' => $degree,
@@ -177,6 +185,7 @@ class MigrationHelper
             ]);
         });
 
+        Element::truncate();
         collect(self::ELEMENTS)->each(static function ($tool, $element) {
             Element::firstOrCreate([
                 'tool' => $tool,
@@ -184,12 +193,30 @@ class MigrationHelper
             ]);
         });
 
+        Wheel::truncate();
         collect(self::WHEELS)->each(static function ($wheel) {
             Wheel::firstOrCreate([
                 'wheel' => $wheel
             ]);
         });
 
+        State::truncate();
+        LegacyState::all()->each(function (LegacyState $legacyState) {
+            State::firstOrCreate([
+                'abbreviation' => $legacyState->Abbrev,
+                'name' => $legacyState->State,
+                'country' => $legacyState->Country,
+                'is_local' => $legacyState->Local
+            ]);
+        });
+    }
+
+    public function populateDependentTables(): void
+    {
+        Coven::truncate();
+        Order::truncate();
+        SecurityQuestion::truncate();
+        
         LegacyCoven::all()->each(function (LegacyCoven $legacyCoven) {
             if (in_array($legacyCoven->Coven, self::ORDERS_IN_LEGACY_COVEN_TABLE, true)) {
                 Order::firstOrCreate([
@@ -209,6 +236,7 @@ class MigrationHelper
                 ]);
             }
         });
+
         LegacyGuild::all()->each(function (LegacyGuild $legacyGuild) {
             $leaderMember = LegacyMember::find($legacyGuild->LeaderMemberID);
             $newMember = Member::where('email', '=', $leaderMember->Email_Address)
@@ -219,16 +247,8 @@ class MigrationHelper
                 'description' => $legacyGuild->Description,
                 'leader_member_id' => $newMember->id ?? null,
             ]);
+        });
 
-        });
-        LegacyState::all()->each(function (LegacyState $legacyState) {
-            State::firstOrCreate([
-                'abbreviation' => $legacyState->Abbrev,
-                'name' => $legacyState->State,
-                'country' => $legacyState->Country,
-                'is_local' => $legacyState->Local
-            ]);
-        });
         LegacySecurityQuestion::all()->each(function (LegacySecurityQuestion $question) {
             SecurityQuestion::firstOrCreate([
                 'question' => $question->Security_Question
@@ -294,8 +314,8 @@ class MigrationHelper
 
     protected function cleanAttributes(array $attributes): array
     {
-        return collect($attributes)->map(static function($value, $key) {
-            if (! $value) {
+        return collect($attributes)->map(static function ($value, $key) {
+            if (!$value) {
                 return null;
             }
             return trim($value);
@@ -306,7 +326,7 @@ class MigrationHelper
     {
         $user = User::query()->where('email', '=', $email);
 
-        return $user ? User::first()->id : null;
+        return $user->exists() ? $user->first()->id : null;
     }
 
     protected function getDate(string $dateString): ?string
