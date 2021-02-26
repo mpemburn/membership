@@ -26,6 +26,7 @@ use App\Models\Wheel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -90,6 +91,7 @@ class MigrationHelper
     ];
 
     protected const DEGREE_TYPES = [
+        'none' => 'none',
         '1st' => 'Witch',
         '2nd' => 'Priestx',
         '3rd' => 'High Priestx',
@@ -125,6 +127,10 @@ class MigrationHelper
         $instance->migrateFromLegacyMembers();
         $instance->populateDependentTables();
         DB::statement("SET foreign_key_checks=1");
+
+        Artisan::call('quickstart', [
+            '--email' => env('DEFAULT_ADMIN_USER')
+        ]);
     }
 
     public function migrateFromLegacyUsers(): void
@@ -323,7 +329,9 @@ class MigrationHelper
 
     protected function createDegreesForMember(Member $member, LegacyMember $legacyMember): void
     {
-        collect(self::DEGREE_DATE_FIELD_NAMES)->each(function (string $degree, string $fieldName) use ($legacyMember, $member) {
+        $highestDegree = 'none';
+        Degree::truncate();
+        collect(self::DEGREE_DATE_FIELD_NAMES)->each(function (string $degree, string $fieldName) use ($legacyMember, $member, &$highestDegree) {
             $degreeDate = $legacyMember->{$fieldName};
             if ($degreeDate) {
                 $attributes = [
@@ -332,9 +340,15 @@ class MigrationHelper
                     'initiation_date' => $degreeDate
                 ];
                 Degree::firstOrCreate($attributes);
+                $highestDegree = $degree;
             }
         });
 
+        if ($highestDegree === 'none') {
+            $highestDegree = array_keys(self::DEGREE_TYPES)[$legacyMember->Degree];
+        }
+        $member->degree_level = $highestDegree;
+        $member->save();
     }
 
     protected function cleanAttributes(array $attributes): array
@@ -385,5 +399,4 @@ class MigrationHelper
 
         return $timeString;
     }
-
 }

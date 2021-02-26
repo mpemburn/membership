@@ -15,15 +15,14 @@ class QuickStart extends Command
 {
     const SAMPLE_ROLES = [
         'Administrator',
-        'Editor',
+        'Leader',
         'End User'
     ];
     const SAMPLE_PERMISSIONS = [
-        'Create Posts',
-        'Edit Posts',
-        'Read Posts',
-        'Delete Posts',
-        'Comment',
+        'Create Member',
+        'Edit Member',
+        'View Member',
+        'Deactivate Member',
     ];
     /**
      * The name and signature of the console command.
