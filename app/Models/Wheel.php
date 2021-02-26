@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Wheel whereWheel($value)
  * @mixin \Eloquent
  */
-class Wheel extends Model
+class Wheel extends AbstractEloquentModel
 {
     use HasFactory;
 

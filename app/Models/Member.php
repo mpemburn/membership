@@ -65,7 +65,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Address[] $adresses
  * @property-read int|null $adresses_count
  */
-class Member extends Model
+class Member extends AbstractEloquentModel
 {
     use HasFactory, Notifiable;
 

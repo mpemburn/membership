@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|State whereName($value)
  * @mixin \Eloquent
  */
-class State extends Model
+class State extends AbstractEloquentModel
 {
     use HasFactory;
 

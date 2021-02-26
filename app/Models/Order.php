@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Order whereName($value)
  * @mixin \Eloquent
  */
-class Order extends Model
+class Order extends AbstractEloquentModel
 {
     use HasFactory;
 

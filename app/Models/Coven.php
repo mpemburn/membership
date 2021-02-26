@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Coven whereWheel($value)
  * @mixin \Eloquent
  */
-class Coven extends Model
+class Coven extends AbstractEloquentModel
 {
     use HasFactory;
 

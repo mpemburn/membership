@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Prefix wherePrefix($value)
  * @mixin \Eloquent
  */
-class Prefix extends Model
+class Prefix extends AbstractEloquentModel
 {
     use HasFactory;
 

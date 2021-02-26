@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|LegacyModel query()
  * @mixin \Eloquent
  */
-class LegacyModel extends Model
+class LegacyModel extends AbstractEloquentModel
 {
     protected $connection = 'legacy';
 }

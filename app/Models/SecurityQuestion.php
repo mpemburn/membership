@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|SecurityQuestion whereQuestion($value)
  * @mixin \Eloquent
  */
-class SecurityQuestion extends Model
+class SecurityQuestion extends AbstractEloquentModel
 {
     use HasFactory;
     public $timestamps = false;

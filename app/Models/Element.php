@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Element whereTool($value)
  * @mixin \Eloquent
  */
-class Element extends Model
+class Element extends AbstractEloquentModel
 {
     use HasFactory;
 

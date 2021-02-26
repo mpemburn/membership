@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|LeadershipRole whereRoleName($value)
  * @mixin \Eloquent
  */
-class LeadershipRole extends Model
+class LeadershipRole extends AbstractEloquentModel
 {
     use HasFactory;
 

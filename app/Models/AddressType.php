@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|AddressType whereType($value)
  * @mixin \Eloquent
  */
-class AddressType extends Model
+class AddressType extends AbstractEloquentModel
 {
     use HasFactory;
 

@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Suffix whereSuffix($value)
  * @mixin \Eloquent
  */
-class Suffix extends Model
+class Suffix extends AbstractEloquentModel
 {
     use HasFactory;
 

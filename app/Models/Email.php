@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Email whereMemberId($value)
  * @mixin \Eloquent
  */
-class Email extends Model
+class Email extends AbstractEloquentModel
 {
     use HasFactory;
 

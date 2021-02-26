@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|DegreeType whereId($value)
  * @mixin \Eloquent
  */
-class DegreeType extends Model
+class DegreeType extends AbstractEloquentModel
 {
     use HasFactory;
 

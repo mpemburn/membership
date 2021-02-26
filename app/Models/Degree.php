@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Degree whereInitiationDate($value)
  * @mixin \Eloquent
  */
-class Degree extends Model
+class Degree extends AbstractEloquentModel
 {
     use HasFactory;
 
