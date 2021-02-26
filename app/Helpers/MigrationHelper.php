@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\Address;
 use App\Models\AddressType;
 use App\Models\Coven;
+use App\Models\Degree;
 use App\Models\DegreeType;
 use App\Models\Element;
 use App\Models\Email;
@@ -96,10 +97,23 @@ class MigrationHelper
         '5th' => 'Craft Parent'
     ];
 
+    protected const DEGREE_DATE_FIELD_NAMES = [
+        'First_Degree_Date' => '1st',
+        'Second_Degree_Date' => '2nd',
+        'Third_Degree_Date' => '3rd',
+        'Fourth_Degree_Date' => '4th',
+        'Fifth_Degree_Date' => '5th'
+    ];
+
     protected const ORDERS_IN_LEGACY_COVEN_TABLE = [
         'ELD',
         'OWS',
         'FOA'
+    ];
+
+    protected const TIME_STRING_GOOFS = [
+        'EDST' => 'EDT',
+        '3:00 - 3:20 AM' => '3:20 AM'
     ];
 
     public static function run(): void
@@ -145,7 +159,7 @@ class MigrationHelper
                 'member_since_date' => $legacyMember->Member_Since_Date,
                 'member_end_date' => $legacyMember->Member_End_Date,
                 'date_of_birth' => $legacyMember->Birth_Date,
-                'time_of_birth' => $this->getBirthTime($legacyMember->Birth_Time),
+                'time_of_birth' => $this->getTimeString($legacyMember->Birth_Time),
                 'place_of_birth' => $legacyMember->Birth_Place,
             ]);
             $this->createEmailAddressesForMember($member, $emailAddresses);
@@ -216,7 +230,7 @@ class MigrationHelper
         Coven::truncate();
         Order::truncate();
         SecurityQuestion::truncate();
-        
+
         LegacyCoven::all()->each(function (LegacyCoven $legacyCoven) {
             if (in_array($legacyCoven->Coven, self::ORDERS_IN_LEGACY_COVEN_TABLE, true)) {
                 Order::firstOrCreate([
@@ -232,7 +246,7 @@ class MigrationHelper
                     'wheel' => $legacyCoven->Wheel,
                     'element' => $legacyCoven->Element,
                     'tool' => $legacyCoven->Tool,
-                    'inception_date' => $this->getDate($legacyCoven->InceptionDate),
+                    'inception_date' => $this->getDateString($legacyCoven->InceptionDate),
                 ]);
             }
         });
@@ -281,7 +295,7 @@ class MigrationHelper
     {
         $isPrimary = true;
         $emailAddresses->each(static function (string $email) use ($member, &$isPrimary) {
-            Email::create([
+            Email::firstOrCreate([
                 'email' => $email,
                 'is_primary' => $isPrimary,
                 'member_id' => $member->id
@@ -304,11 +318,22 @@ class MigrationHelper
 
         $address = Address::firstOrCreate($attributes);
         // Attach address to the Member
-        $member->adresses()->attach($address);
+        $member->addresses()->attach($address);
     }
 
     protected function createDegreesForMember(Member $member, LegacyMember $legacyMember): void
     {
+        collect(self::DEGREE_DATE_FIELD_NAMES)->each(function (string $degree, string $fieldName) use ($legacyMember, $member) {
+            $degreeDate = $legacyMember->{$fieldName};
+            if ($degreeDate) {
+                $attributes = [
+                    'degree' => $degree,
+                    'member_id' => $member->id,
+                    'initiation_date' => $degreeDate
+                ];
+                Degree::firstOrCreate($attributes);
+            }
+        });
 
     }
 
@@ -329,7 +354,7 @@ class MigrationHelper
         return $user->exists() ? $user->first()->id : null;
     }
 
-    protected function getDate(string $dateString): ?string
+    protected function getDateString(string $dateString): ?string
     {
         if ($dateString === '0000-00-00') {
             return null;
@@ -344,17 +369,21 @@ class MigrationHelper
         return $dateString;
     }
 
-    protected function getBirthTime(?string $birthTime): ?string
+    protected function getTimeString(?string $timeString): ?string
     {
-        $birthTime = str_replace(['EDST', '3:00 - 3:20 AM'], ['EDT', '3:20 AM'], $birthTime);
+        $timeString = str_replace(
+            array_keys(self::TIME_STRING_GOOFS),
+            array_values(self::TIME_STRING_GOOFS),
+            $timeString
+        );
         try {
-            $birthTime = Carbon::parse($birthTime)->format('H:i');
+            $timeString = Carbon::parse($timeString)->format('H:i');
         } catch (\Exception $e) {
             // TODO: Gather errors
             return null;
         }
 
-        return $birthTime;
+        return $timeString;
     }
 
 }

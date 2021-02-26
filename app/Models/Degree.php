@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * App\Models\Degree
@@ -27,6 +28,12 @@ class Degree extends Model
 
     public $fillable = [
         'degree',
+        'member_id',
         'initiation_date'
     ];
+
+    public function member(): BelongsTo
+    {
+        return $this->belongsTo(Member::class);
+    }
 }

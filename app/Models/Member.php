@@ -107,12 +107,17 @@ class Member extends Model
         return $this->hasMany(Email::class);
     }
 
+    public function degrees(): HasMany
+    {
+        return $this->hasMany(Degree::class);
+    }
+
     public function coven(): BelongsTo
     {
         return $this->belongsTo(Coven::class);
     }
 
-    public function adresses(): BelongsToMany
+    public function addresses(): BelongsToMany
     {
         return $this->belongsToMany(Address::class);
     }
