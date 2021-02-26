@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Member;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,10 +20,13 @@ class OrderFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
-            //
+            'abbreviation' => $this->faker->lexify('??'),
+            'name' => $this->faker->word,
+            'description' =>$this->faker->word,
+            'leader_member_id' => Member::factory(),
         ];
     }
 }

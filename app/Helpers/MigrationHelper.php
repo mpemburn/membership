@@ -2,19 +2,20 @@
 
 namespace App\Helpers;
 
+use App\Models\Address;
 use App\Models\Coven;
 use App\Models\Element;
 use App\Models\Email;
 use App\Models\Legacy\LegacyCoven;
 use App\Models\Legacy\LegacyGuild;
+use App\Models\Legacy\LegacySecurityQuestion;
 use App\Models\Legacy\LegacyState;
-use App\Models\Legacy\LegacySuffix;
-use App\Models\Legacy\LegacyTitle;
 use App\Models\Legacy\LegacyUser;
 use App\Models\Legacy\LegacyMember;
 use App\Models\Member;
 use App\Models\Order;
 use App\Models\Prefix;
+use App\Models\SecurityQuestion;
 use App\Models\State;
 use App\Models\Suffix;
 use App\Models\User;
@@ -26,7 +27,6 @@ use Illuminate\Support\Facades\Validator;
 
 class MigrationHelper
 {
-
     protected const ELEMENTS = [
         'Air' => 'Sword',
         'Fire' => 'Staff',
@@ -87,8 +87,8 @@ class MigrationHelper
     public static function run(): void
     {
         $instance = new static();
-//        $instance->migrateFromLegacyUsers();
-//        $instance->migrateFromLegacyMembers();
+        $instance->migrateFromLegacyUsers();
+        $instance->migrateFromLegacyMembers();
         $instance->populateSubTables();
     }
 
@@ -111,6 +111,7 @@ class MigrationHelper
             $fromLegacy = $legacyMember->toArray();
             if (!Member::query()->where('email', '=', $legacyMember->Email_Address)->exists()) {
                 $emailAddresses = $this->extractEmailAddresses($legacyMember->Email_Address);
+                !d($legacyMember->First_Name, $legacyMember->Last_Name);
                 $member = Member::create([
                     'active' => $legacyMember->Active,
                     'user_id' => $this->getUserIdFromEmail($legacyMember->Email_Address),
@@ -126,6 +127,7 @@ class MigrationHelper
                     'place_of_birth' => $legacyMember->Birth_Place,
                 ]);
                 $this->createEmailAddressesForMember($member, $emailAddresses);
+                $this->createMailingAddressesForMember($member, $legacyMember);
             }
         });
     }
@@ -189,12 +191,16 @@ class MigrationHelper
 
         });
         LegacyState::all()->each(function (LegacyState $legacyState) {
-//            !d($legacyState->toArray());
             State::firstOrCreate([
                 'abbreviation' => $legacyState->Abbrev,
                 'name' => $legacyState->State,
                 'country' => $legacyState->Country,
                 'is_local' => $legacyState->Local
+            ]);
+        });
+        LegacySecurityQuestion::all()->each(function (LegacySecurityQuestion $question) {
+            SecurityQuestion::firstOrCreate([
+                'question' => $question->Security_Question
             ]);
         });
     }
@@ -232,6 +238,32 @@ class MigrationHelper
 
             $isPrimary = false;
         });
+    }
+
+    protected function createMailingAddressesForMember(Member $member, LegacyMember $legacyMember): void
+    {
+        $attributes = $this->cleanAttributes([
+            'address_1' => $legacyMember->Address1 ?? 'Unknown',
+            'address_2' => $legacyMember->Address2,
+            'address_3' => null,
+            'city' => $legacyMember->City ?? 'Unknown',
+            'state' => $legacyMember->State ?? 'N/A',
+            'zip' => $legacyMember->Zip ?? 'Unknown'
+        ]);
+        !d($attributes);
+        $address = Address::firstOrCreate($attributes);
+        // Attach address to the Member
+        $member->adresses()->attach($address);
+    }
+
+    protected function cleanAttributes(array $attributes): array
+    {
+        return collect($attributes)->map(static function($value, $key) {
+            if (! $value) {
+                return null;
+            }
+            return trim($value);
+        })->filter()->toArray();
     }
 
     protected function getUserIdFromEmail($email): ?string

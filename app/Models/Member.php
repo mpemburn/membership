@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Notifications\Notifiable;
@@ -13,20 +14,6 @@ use Illuminate\Notifications\Notifiable;
  * Class Member
  *
  * @package App\Models
- * @property $active;
- * @property $user_id;
- * @property $prefix_id;
- * @property $first_name;
- * @property $middle_name;
- * @property $last_name;
- * @property $suffix_id;
- * @property $magickal_name;
- * @property $member_since_date;
- * @property $member_end_date;
- * @property $date_of_birth;
- * @property $time_of_birth;
- * @property $place_of_birth;
- * @property $coven_id;
  * @property int $id
  * @property int $active
  * @property int|null $user_id
@@ -121,5 +108,10 @@ class Member extends Model
     public function coven(): BelongsTo
     {
         return $this->belongsTo(Coven::class);
+    }
+
+    public function adresses(): BelongsToMany
+    {
+        return $this->belongsToMany(Address::class);
     }
 }
