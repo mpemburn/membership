@@ -27,6 +27,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereZip($value)
  * @mixin \Eloquent
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Member[] $members
+ * @property-read int|null $members_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereUpdatedAt($value)
  */
 class Address extends Model
 {

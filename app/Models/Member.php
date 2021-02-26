@@ -62,6 +62,8 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Member whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Member whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Address[] $adresses
+ * @property-read int|null $adresses_count
  */
 class Member extends Model
 {

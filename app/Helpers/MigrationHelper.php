@@ -3,7 +3,9 @@
 namespace App\Helpers;
 
 use App\Models\Address;
+use App\Models\AddressType;
 use App\Models\Coven;
+use App\Models\DegreeType;
 use App\Models\Element;
 use App\Models\Email;
 use App\Models\Legacy\LegacyCoven;
@@ -49,12 +51,6 @@ class MigrationHelper
         'Aries'
     ];
 
-    protected const ORDERS_IN_LEGACY_COVEN_TABLE = [
-        'ELD',
-        'OWS',
-        'FOA'
-    ];
-
     protected const PREFIXES = [
         'Ms.',
         'Mr.',
@@ -84,6 +80,27 @@ class MigrationHelper
         'Partner',
     ];
 
+    protected const ADDRESS_TYPES = [
+        'Home',
+        'Work',
+        'P.O. Box',
+        'Other'
+    ];
+
+    protected const DEGREE_TYPES = [
+        '1st' => 'Witch',
+        '2nd' => 'Priestx',
+        '3rd' => 'High Priestx',
+        '4th' => 'Elder',
+        '5th' => 'Craft Parent'
+    ];
+
+    protected const ORDERS_IN_LEGACY_COVEN_TABLE = [
+        'ELD',
+        'OWS',
+        'FOA'
+    ];
+
     public static function run(): void
     {
         $instance = new static();
@@ -111,7 +128,7 @@ class MigrationHelper
             $fromLegacy = $legacyMember->toArray();
             if (!Member::query()->where('email', '=', $legacyMember->Email_Address)->exists()) {
                 $emailAddresses = $this->extractEmailAddresses($legacyMember->Email_Address);
-                !d($legacyMember->First_Name, $legacyMember->Last_Name);
+//                !d($legacyMember->First_Name, $legacyMember->Last_Name);
                 $member = Member::create([
                     'active' => $legacyMember->Active,
                     'user_id' => $this->getUserIdFromEmail($legacyMember->Email_Address),
@@ -128,6 +145,7 @@ class MigrationHelper
                 ]);
                 $this->createEmailAddressesForMember($member, $emailAddresses);
                 $this->createMailingAddressesForMember($member, $legacyMember);
+                $this->createDegreesForMember($member, $legacyMember);
             }
         });
     }
@@ -143,6 +161,19 @@ class MigrationHelper
         collect(self::PREFIXES)->each(static function ($prefix) {
             Prefix::firstOrCreate([
                 'prefix' => $prefix
+            ]);
+        });
+
+        collect(self::ADDRESS_TYPES)->each(static function ($type) {
+            AddressType::firstOrCreate([
+                'type' => $type
+            ]);
+        });
+
+        collect(self::DEGREE_TYPES)->each(static function ($description, $degree) {
+            DegreeType::firstOrCreate([
+                'degree' => $degree,
+                'description' => $description
             ]);
         });
 
@@ -250,10 +281,15 @@ class MigrationHelper
             'state' => $legacyMember->State ?? 'N/A',
             'zip' => $legacyMember->Zip ?? 'Unknown'
         ]);
-        !d($attributes);
+
         $address = Address::firstOrCreate($attributes);
         // Attach address to the Member
         $member->adresses()->attach($address);
+    }
+
+    protected function createDegreesForMember(Member $member, LegacyMember $legacyMember): void
+    {
+
     }
 
     protected function cleanAttributes(array $attributes): array
@@ -270,7 +306,7 @@ class MigrationHelper
     {
         $user = User::query()->where('email', '=', $email);
 
-        return $user->exists() ? $user->first()->id : null;
+        return $user ? User::first()->id : null;
     }
 
     protected function getDate(string $dateString): ?string
