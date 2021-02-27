@@ -121,6 +121,9 @@ class MigrationHelper
     public static function run(): void
     {
         $instance = new static();
+        // Do a schema dump to make sure the database and migrations are in sync
+        Artisan::call('schema:dump');
+
         DB::statement("SET foreign_key_checks=0");
         $instance->populateSubTables();
         $instance->migrateFromLegacyUsers();
@@ -167,7 +170,9 @@ class MigrationHelper
                 'date_of_birth' => $legacyMember->Birth_Date,
                 'time_of_birth' => $this->getTimeString($legacyMember->Birth_Time),
                 'place_of_birth' => $legacyMember->Birth_Place,
+                'current_degree_id' => $legacyMember->Degree,
             ]);
+//            !d($member->toArray());
             $this->createEmailAddressesForMember($member, $emailAddresses);
             $this->createMailingAddressesForMember($member, $legacyMember);
             $this->createDegreesForMember($member, $legacyMember);
@@ -319,7 +324,8 @@ class MigrationHelper
             'address_3' => null,
             'city' => $legacyMember->City ?? 'Unknown',
             'state' => $legacyMember->State ?? 'N/A',
-            'zip' => $legacyMember->Zip ?? 'Unknown'
+            'zip' => $legacyMember->Zip ?? 'Unknown',
+            'address_type' => $this->setAddressType($legacyMember->Address1)
         ]);
 
         $address = Address::firstOrCreate($attributes);
@@ -327,28 +333,29 @@ class MigrationHelper
         $member->addresses()->attach($address);
     }
 
+    protected function setAddressType(?string $address1): string
+    {
+        if (preg_match('/(po|p.o.)(box| box)/i', $address1)) {
+            return 'P.O. Box';
+        }
+
+        return 'Home';
+    }
+
     protected function createDegreesForMember(Member $member, LegacyMember $legacyMember): void
     {
-        $highestDegree = 'none';
-        Degree::truncate();
         collect(self::DEGREE_DATE_FIELD_NAMES)->each(function (string $degree, string $fieldName) use ($legacyMember, $member, &$highestDegree) {
             $degreeDate = $legacyMember->{$fieldName};
             if ($degreeDate) {
                 $attributes = [
-                    'degree' => $degree,
                     'member_id' => $member->id,
+                    'degree' => $degree,
                     'initiation_date' => $degreeDate
                 ];
                 Degree::firstOrCreate($attributes);
-                $highestDegree = $degree;
             }
         });
 
-        if ($highestDegree === 'none') {
-            $highestDegree = array_keys(self::DEGREE_TYPES)[$legacyMember->Degree];
-        }
-        $member->degree_level = $highestDegree;
-        $member->save();
     }
 
     protected function cleanAttributes(array $attributes): array

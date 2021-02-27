@@ -29,6 +29,7 @@ class Degree extends Model
     public $fillable = [
         'degree',
         'member_id',
+        'member_id',
         'initiation_date'
     ];
 

@@ -84,6 +84,7 @@ class Member extends Model
         'date_of_birth',
         'time_of_birth',
         'place_of_birth',
+        'current_degree_id',
         'coven_id',
     ];
 

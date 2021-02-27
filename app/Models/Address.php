@@ -44,7 +44,8 @@ class Address extends Model
         'address_3',
         'city',
         'state',
-        'zip'
+        'zip',
+        'address_type'
     ];
 
     public function members(): BelongsToMany

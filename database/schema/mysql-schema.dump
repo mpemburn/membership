@@ -4,29 +4,45 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+DROP TABLE IF EXISTS `address_member`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `address_member` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `member_id` bigint(20) unsigned NOT NULL,
+  `address_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `address_types`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `address_types` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `address_type` varchar(100) NOT NULL,
+  `type` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unq_address_types_address_type` (`address_type`)
+  UNIQUE KEY `unq_address_types_address_type` (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `addresses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `addresses` (
-  `id` bigint(20) unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `address_1` varchar(100) NOT NULL,
   `address_2` varchar(100) DEFAULT NULL,
   `address_3` varchar(100) DEFAULT NULL,
   `city` varchar(100) NOT NULL,
-  `state` varchar(2) NOT NULL,
+  `state` varchar(10) NOT NULL,
   `zip` varchar(20) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updated_at` date DEFAULT NULL,
+  `address_type` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   UNIQUE KEY `unq_addresses_id` (`id`),
   KEY `fk_addresses_states` (`state`),
+  KEY `fk_addresses_address_types` (`address_type`),
+  CONSTRAINT `fk_addresses_address_types` FOREIGN KEY (`address_type`) REFERENCES `address_types` (`type`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_addresses_states` FOREIGN KEY (`state`) REFERENCES `states` (`abbreviation`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -54,11 +70,24 @@ CREATE TABLE `covens` (
   `abbreviation` varchar(10) NOT NULL,
   `wheel` varchar(20) DEFAULT NULL,
   `element` varchar(20) DEFAULT NULL,
+  `tool` varchar(20) DEFAULT NULL,
+  `inception_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_covens_elements` (`element`),
   KEY `fk_covens_wheels` (`wheel`),
   CONSTRAINT `fk_covens_elements` FOREIGN KEY (`element`) REFERENCES `elements` (`element`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_covens_wheels` FOREIGN KEY (`wheel`) REFERENCES `wheels` (`wheel`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `degree_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `degree_types` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `degree` varchar(30) DEFAULT NULL,
+  `description` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unq_degree_type_degree` (`degree`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `degrees`;
@@ -68,7 +97,12 @@ CREATE TABLE `degrees` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `degree` varchar(20) NOT NULL,
   `initiation_date` date DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `member_id` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_degrees_degree_types` (`degree`),
+  KEY `fk_degrees_members` (`member_id`),
+  CONSTRAINT `fk_degrees_degree_types` FOREIGN KEY (`degree`) REFERENCES `degree_types` (`degree`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_degrees_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `elements`;
@@ -142,46 +176,18 @@ CREATE TABLE `members` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `coven_id` bigint(20) unsigned DEFAULT NULL,
+  `current_degree_id` bigint(20) unsigned DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_members_sufixes` (`suffix_id`),
   KEY `fk_members_prefixes` (`prefix_id`),
   KEY `fk_members_covens` (`coven_id`),
   KEY `fk_members_users` (`user_id`),
+  KEY `fk_members_degrees_0` (`current_degree_id`),
   CONSTRAINT `fk_members_covens` FOREIGN KEY (`coven_id`) REFERENCES `covens` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_members_prefixes` FOREIGN KEY (`prefix_id`) REFERENCES `prefixes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_members_sufixes` FOREIGN KEY (`suffix_id`) REFERENCES `suffixes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `members_addresses`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `members_addresses` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `member_id` bigint(20) unsigned NOT NULL,
-  `address_id` bigint(20) unsigned NOT NULL,
-  `address_type_id` bigint(20) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unq_members_addresses_address_id` (`address_id`),
-  UNIQUE KEY `unq_members_addresses_member_id` (`member_id`),
-  UNIQUE KEY `unq_members_addresses_address_type_id` (`address_type_id`),
-  CONSTRAINT `fk_members_addresses_address_types` FOREIGN KEY (`address_type_id`) REFERENCES `address_types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_members_addresses_addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_members_addresses_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `members_degrees`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `members_degrees` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `member_id` bigint(20) unsigned NOT NULL,
-  `degree_id` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unq_members_degrees_member_id` (`member_id`),
-  KEY `fk_members_degrees_degrees` (`degree_id`),
-  CONSTRAINT `fk_members_degrees_degrees` FOREIGN KEY (`degree_id`) REFERENCES `degrees` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_members_degrees_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `members_leaders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -327,6 +333,20 @@ CREATE TABLE `oauth_refresh_tokens` (
   KEY `oauth_refresh_tokens_access_token_id_index` (`access_token_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `orders` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `abbreviation` varchar(20) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  `leader_member_id` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unq_orders` (`abbreviation`),
+  UNIQUE KEY `unq_orders_leader_member_id` (`leader_member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `password_resets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -398,7 +418,7 @@ DROP TABLE IF EXISTS `states`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `states` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `abbreviation` varchar(2) NOT NULL,
+  `abbreviation` varchar(10) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
   `country` varchar(2) DEFAULT 'US',
   `is_local` tinyint(4) DEFAULT NULL,
@@ -460,23 +480,3 @@ CREATE TABLE `wheels` (
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-INSERT INTO `migrations` VALUES (1,'2014_10_12_000000_create_users_table',1);
-INSERT INTO `migrations` VALUES (2,'2014_10_12_100000_create_password_resets_table',1);
-INSERT INTO `migrations` VALUES (3,'2019_08_19_000000_create_failed_jobs_table',1);
-INSERT INTO `migrations` VALUES (5,'2020_10_08_134906_create_permission_tables',1);
-INSERT INTO `migrations` VALUES (6,'2016_06_01_000001_create_oauth_auth_codes_table',2);
-INSERT INTO `migrations` VALUES (7,'2016_06_01_000002_create_oauth_access_tokens_table',2);
-INSERT INTO `migrations` VALUES (8,'2016_06_01_000003_create_oauth_refresh_tokens_table',2);
-INSERT INTO `migrations` VALUES (9,'2016_06_01_000004_create_oauth_clients_table',2);
-INSERT INTO `migrations` VALUES (10,'2016_06_01_000005_create_oauth_personal_access_clients_table',2);
-INSERT INTO `migrations` VALUES (11,'2020_10_07_152100_CreateMembersTable',3);
-INSERT INTO `migrations` VALUES (12,'2020_10_07_152100_create_members_table',4);
-INSERT INTO `migrations` VALUES (21,'2020_11_09_135253_seed_elements_table',6);
-INSERT INTO `migrations` VALUES (22,'2020_11_09_135437_seed_wheels_table',7);
-INSERT INTO `migrations` VALUES (23,'2020_11_09_114222_seed_states_table',8);
-INSERT INTO `migrations` VALUES (25,'2020_11_10_175420_seed_leadership_role_table',9);
-INSERT INTO `migrations` VALUES (28,'2016_06_01_000001_create_oauth_auth_codes_table',1);
-INSERT INTO `migrations` VALUES (29,'2020_11_12_181618_seed_security_question_table',10);
-INSERT INTO `migrations` VALUES (30,'2020_11_13_193828_seed_prefixes_table',11);
-INSERT INTO `migrations` VALUES (32,'2020_11_17_162752_create_posts_table',12);
-INSERT INTO `migrations` VALUES (33,'2021_02_18_162221_create_permission_tables',13);
