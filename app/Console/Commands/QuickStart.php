@@ -16,13 +16,19 @@ class QuickStart extends Command
     const SAMPLE_ROLES = [
         'Administrator',
         'Leader',
+        'Scribe',
+        'Purse Warden',
         'End User'
     ];
     const SAMPLE_PERMISSIONS = [
-        'Create Member',
-        'Edit Member',
-        'View Member',
-        'Deactivate Member',
+        'Create Any Member',
+        'Edit Any Member',
+        'View Any Member',
+        'Deactivate Any Member',
+        'Create Coven Member',
+        'Edit Coven Member',
+        'View Coven Member',
+        'Deactivate Coven Member',
     ];
     /**
      * The name and signature of the console command.
