@@ -19,6 +19,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Degree whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Degree whereInitiationDate($value)
  * @mixin \Eloquent
+ * @property int|null $member_id
+ * @property-read \App\Models\Member|null $member
+ * @method static \Illuminate\Database\Eloquent\Builder|Degree whereMemberId($value)
  */
 class Degree extends Model
 {

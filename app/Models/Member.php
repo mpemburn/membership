@@ -64,6 +64,12 @@ use Illuminate\Notifications\Notifiable;
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Address[] $adresses
  * @property-read int|null $adresses_count
+ * @property int|null $current_degree_id
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Address[] $addresses
+ * @property-read int|null $addresses_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Degree[] $degrees
+ * @property-read int|null $degrees_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Member whereCurrentDegreeId($value)
  */
 class Member extends Model
 {
@@ -106,6 +112,11 @@ class Member extends Model
     public function emails(): HasMany
     {
         return $this->hasMany(Email::class);
+    }
+
+    public function phoneNumber(): HasMany
+    {
+        return $this->hasMany(PhoneNumber::class);
     }
 
     public function degrees(): HasMany

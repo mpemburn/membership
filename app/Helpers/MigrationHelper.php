@@ -17,12 +17,14 @@ use App\Models\Legacy\LegacyUser;
 use App\Models\Legacy\LegacyMember;
 use App\Models\Member;
 use App\Models\Order;
+use App\Models\PhoneNumber;
 use App\Models\Prefix;
 use App\Models\SecurityQuestion;
 use App\Models\State;
 use App\Models\Suffix;
 use App\Models\User;
 use App\Models\Wheel;
+use App\Objects\PhoneParser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -107,6 +109,13 @@ class MigrationHelper
         'Fifth_Degree_Date' => '5th'
     ];
 
+    protected const PHONE_TYPE_FIELD_NAMES = [
+        'Home_Phone',
+        'Work_Phone',
+        'Cell_Phone',
+        'Fax_Phone',
+    ];
+
     protected const ORDERS_IN_LEGACY_COVEN_TABLE = [
         'ELD',
         'OWS',
@@ -153,6 +162,7 @@ class MigrationHelper
     public function migrateFromLegacyMembers(): void
     {
         Member::truncate();
+        PhoneNumber::truncate();
         LegacyMember::all()->each(function (LegacyMember $legacyMember) {
             $fromLegacy = $legacyMember->toArray();
             $emailAddresses = $this->extractEmailAddresses($legacyMember->Email_Address);
@@ -176,6 +186,7 @@ class MigrationHelper
             $this->createEmailAddressesForMember($member, $emailAddresses);
             $this->createMailingAddressesForMember($member, $legacyMember);
             $this->createDegreesForMember($member, $legacyMember);
+            $this->createPhonesForMember($member, $legacyMember);
         });
     }
 
@@ -353,6 +364,33 @@ class MigrationHelper
                     'initiation_date' => $degreeDate
                 ];
                 Degree::firstOrCreate($attributes);
+            }
+        });
+
+    }
+
+    protected function createPhonesForMember(Member $member, LegacyMember $legacyMember): void
+    {
+        collect(self::PHONE_TYPE_FIELD_NAMES)->each(function (string $fieldName, int $key) use ($legacyMember, $member, &$highestDegree) {
+            $isPrimary = ($key === $legacyMember->Primary_Phone);
+            $type = str_replace('_Phone', '', $fieldName);
+            $testNumber = $legacyMember->{$fieldName};
+
+            if ($testNumber) {
+                $parser = new PhoneParser;
+                $phoneNumber = $parser->parse($testNumber);
+                $extension = $parser->getExtension();
+                $attributes = [
+                    'phone_number' => $phoneNumber,
+                    'member_id' => $member->id,
+                    'extension' => $extension,
+                    'type' => $type,
+                    'is_primary' => $isPrimary
+                ];
+
+                if ($phoneNumber) {
+                    PhoneNumber::firstOrCreate($attributes);
+                }
             }
         });
 

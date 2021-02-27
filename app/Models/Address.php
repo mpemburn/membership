@@ -33,6 +33,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read int|null $members_count
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Address whereUpdatedAt($value)
+ * @property string|null $address_type
+ * @method static \Illuminate\Database\Eloquent\Builder|Address whereAddressType($value)
  */
 class Address extends Model
 {
