@@ -52,7 +52,7 @@ DROP TABLE IF EXISTS `bondeds`;
 CREATE TABLE `bondeds` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `coven_id` bigint(20) unsigned NOT NULL,
-  `bonded_date` date NOT NULL,
+  `bonded_date` date DEFAULT NULL,
   `member_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_bondeds_covens` (`coven_id`),
@@ -136,10 +136,9 @@ CREATE TABLE `leaders` (
   `member_id` bigint(20) unsigned NOT NULL,
   `role_name` varchar(20) NOT NULL,
   `leadership_date` date DEFAULT NULL,
+  `wheel` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unq_leaders_role_name` (`role_name`),
-  KEY `fk_leaders_members` (`member_id`),
-  CONSTRAINT `fk_leaders_leadership_roles` FOREIGN KEY (`role_name`) REFERENCES `leadership_roles` (`role_name`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_leaders_members` (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `leadership_roles`;
@@ -380,6 +379,7 @@ CREATE TABLE `phone_numbers` (
   `type` varchar(20) DEFAULT NULL,
   `is_primary` tinyint(4) DEFAULT 0,
   `member_id` bigint(20) unsigned DEFAULT NULL,
+  `country_code` char(2) DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `fk_phone_numbers_members` (`member_id`),
   CONSTRAINT `fk_phone_numbers_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION

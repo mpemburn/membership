@@ -4,11 +4,14 @@ namespace App\Helpers;
 
 use App\Models\Address;
 use App\Models\AddressType;
+use App\Models\Bonded;
 use App\Models\Coven;
 use App\Models\Degree;
 use App\Models\DegreeType;
 use App\Models\Element;
 use App\Models\Email;
+use App\Models\Leader;
+use App\Models\LeadershipRole;
 use App\Models\Legacy\LegacyCoven;
 use App\Models\Legacy\LegacyGuild;
 use App\Models\Legacy\LegacySecurityQuestion;
@@ -170,6 +173,7 @@ class MigrationHelper
             $member = Member::firstOrCreate([
                 'active' => $legacyMember->Active,
                 'user_id' => $this->getUserIdFromEmail($legacyMember->Email_Address),
+                'coven_id' => $this->getCovenIdFromName($legacyMember->Coven),
                 'email' => $emailAddresses->first(),
                 'first_name' => $legacyMember->First_Name,
                 'middle_name' => $legacyMember->Middle_Name,
@@ -187,6 +191,8 @@ class MigrationHelper
             $this->createMailingAddressesForMember($member, $legacyMember);
             $this->createDegreesForMember($member, $legacyMember);
             $this->createPhonesForMember($member, $legacyMember);
+            $this->createLeadershipRolesForMember($member, $legacyMember);
+            $this->createBondedForMember($member, $legacyMember);
         });
     }
 
@@ -374,7 +380,7 @@ class MigrationHelper
         collect(self::PHONE_TYPE_FIELD_NAMES)->each(function (string $fieldName, int $key) use ($legacyMember, $member, &$highestDegree) {
             $isPrimary = ($key === $legacyMember->Primary_Phone);
             $type = str_replace('_Phone', '', $fieldName);
-            $testNumber = $legacyMember->{$fieldName};
+            $testNumber = trim($legacyMember->{$fieldName});
 
             if ($testNumber) {
                 $parser = new PhoneParser;
@@ -390,10 +396,35 @@ class MigrationHelper
 
                 if ($phoneNumber) {
                     PhoneNumber::firstOrCreate($attributes);
+                } else {
+                    // TODO: Gather errors
                 }
             }
         });
+        //vaxM3Now
+    }
 
+    protected function createLeadershipRolesForMember(Member $member, LegacyMember $legacyMember): void
+    {
+        if ($legacyMember->LeadershipRole) {
+            Leader::firstOrCreate([
+                'member_id' => $member->id,
+                'role_name' => $legacyMember->LeadershipRole,
+                'wheel' => $this->getWheelFromCovenId($member->coven_id),
+                'leadership_date' => $legacyMember->Leadership_Date,
+            ]);
+        }
+    }
+
+    protected function createBondedForMember(Member $member, LegacyMember $legacyMember): void
+    {
+//        if ($legacyMember->Bonded === 1 && $member->active === 1) {
+//            Bonded::firstOrCreate([
+//                'member_id' => $member->id,
+//                'coven_id' => $member->coven_id,
+//                'bonded_date' => $legacyMember->Bonded_Date
+//            ]);
+//        }
     }
 
     protected function cleanAttributes(array $attributes): array
@@ -410,7 +441,21 @@ class MigrationHelper
     {
         $user = User::query()->where('email', '=', $email);
 
-        return $user->exists() ? $user->first()->id : null;
+        return $user && $user->exists() ? $user->first()->id : null;
+    }
+
+    protected function getCovenIdFromName(?string $covenName): ?int
+    {
+        $coven = Coven::where('abbreviation', '=', $covenName);
+
+        return $coven && $coven->exists() ? $coven->first()->id : null;
+    }
+
+    protected function getWheelFromCovenId($covenId)
+    {
+        $coven = Coven::find($covenId);
+
+        return $coven && $coven->exists() ? $coven->first()->wheel : null;
     }
 
     protected function getDateString(string $dateString): ?string

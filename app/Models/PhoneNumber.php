@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|PhoneNumber wherePhoneNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PhoneNumber whereType($value)
  * @mixin \Eloquent
+ * @property string|null $country_code
+ * @method static \Illuminate\Database\Eloquent\Builder|PhoneNumber whereCountryCode($value)
  */
 class PhoneNumber extends Model
 {
@@ -34,6 +36,7 @@ class PhoneNumber extends Model
     public $fillable = [
         'phone_number',
         'member_id',
+        'country_code',
         'extension',
         'type',
         'is_primary'

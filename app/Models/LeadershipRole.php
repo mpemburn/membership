@@ -30,8 +30,8 @@ class LeadershipRole extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'abbreviation',
         'role_name',
+        'abbreviation',
         'group_name',
         'level'
     ];

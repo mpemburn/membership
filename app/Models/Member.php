@@ -70,6 +70,8 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Degree[] $degrees
  * @property-read int|null $degrees_count
  * @method static \Illuminate\Database\Eloquent\Builder|Member whereCurrentDegreeId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PhoneNumber[] $phoneNumber
+ * @property-read int|null $phone_number_count
  */
 class Member extends Model
 {
