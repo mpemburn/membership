@@ -378,7 +378,7 @@ class MigrationHelper
 
             if ($testNumber) {
                 $parser = new PhoneParser;
-                $phoneNumber = $parser->parse($testNumber);
+                $phoneNumber = $parser->parse($testNumber)->format();
                 $extension = $parser->getExtension();
                 $attributes = [
                     'phone_number' => $phoneNumber,
