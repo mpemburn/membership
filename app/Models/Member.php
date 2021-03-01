@@ -72,6 +72,8 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Member whereCurrentDegreeId($value)
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\PhoneNumber[] $phoneNumber
  * @property-read int|null $phone_number_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Coven[] $covens
+ * @property-read int|null $covens_count
  */
 class Member extends Model
 {
@@ -112,6 +114,11 @@ class Member extends Model
         return null;
     }
 
+    public function getCurrentCoven(): BelongsToMany
+    {
+        return $this->covens()->where('is_current', '=', 1);
+    }
+
     public function user(): HasOne
     {
         return $this->hasOne(User::class);
@@ -134,7 +141,7 @@ class Member extends Model
 
     public function covens(): BelongsToMany
     {
-        return $this->belongsToMany(Coven::class);
+        return $this->belongsToMany(Coven::class)->withPivot('is_current');
     }
 
     public function phoneNumber(): HasMany

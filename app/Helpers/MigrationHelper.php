@@ -6,6 +6,7 @@ use App\Models\Address;
 use App\Models\AddressType;
 use App\Models\Bonded;
 use App\Models\Coven;
+use App\Models\CovenOfficer;
 use App\Models\Degree;
 use App\Models\DegreeType;
 use App\Models\Element;
@@ -14,6 +15,7 @@ use App\Models\Leader;
 use App\Models\LeadershipRole;
 use App\Models\Legacy\LegacyCoven;
 use App\Models\Legacy\LegacyGuild;
+use App\Models\Legacy\LegacyLeadershipRole;
 use App\Models\Legacy\LegacySecurityQuestion;
 use App\Models\Legacy\LegacyState;
 use App\Models\Legacy\LegacyUser;
@@ -177,6 +179,9 @@ class MigrationHelper
         PhoneNumber::truncate();
         Leader::truncate();
         Bonded::truncate();
+        // Truncate the pivot tables
+        DB::table('address_member')->truncate();
+        DB::table('coven_member')->truncate();
         LegacyMember::all()->each(function (LegacyMember $legacyMember) {
 //                !d($legacyMember->First_Name, $legacyMember->Last_Name);
             $emailAddresses = $this->extractEmailAddresses($legacyMember->Email_Address);
@@ -201,7 +206,7 @@ class MigrationHelper
             $this->createMailingAddressesForMember($member, $legacyMember);
             $this->createDegreesForMember($member, $legacyMember);
             $this->createPhonesForMember($member, $legacyMember);
-//            $this->createLeadersForMember($member, $legacyMember);
+            $this->createLeadersForMember($member, $legacyMember);
             $this->createBondedForMember($member, $legacyMember);
         });
     }
@@ -249,6 +254,16 @@ class MigrationHelper
         collect(self::CIRCLES)->each(static function ($circle) {
             Circle::firstOrCreate([
                 'circle' => $circle
+            ]);
+        });
+
+        LeadershipRole::truncate();
+        LegacyLeadershipRole::all()->each(function (LegacyLeadershipRole $legacyLeadershipRole) {
+            LeadershipRole::firstOrCreate([
+                'role_name' => $legacyLeadershipRole->Description,
+                'abbreviation' => $legacyLeadershipRole->Role,
+                'group_name' => $legacyLeadershipRole->GroupName,
+                'level' => $legacyLeadershipRole->LeadershipLevel
             ]);
         });
 
@@ -429,13 +444,35 @@ class MigrationHelper
 
     protected function createLeadersForMember(Member $member, LegacyMember $legacyMember): void
     {
-        if ($legacyMember->LeadershipRole) {
+        if (! $legacyMember->LeadershipRole || $legacyMember->Active === 0) {
+            return;
+        }
+
+        $circle = null;
+        $coven = $member->getCurrentCoven();
+        if ($coven->exists()) {
+            $covenId = $coven->first()->id;
+            if ($legacyMember->LeadershipRole === 'SCR' || $legacyMember->LeadershipRole === 'PW') {
+                CovenOfficer::firstOrCreate([
+                    'coven_id' => $covenId,
+                    'member_id' => $member->id,
+                    'officer' => $legacyMember->LeadershipRole,
+                ]);
+            } else {
+                $circle = $this->getCircleFromCovenId($covenId);
+            }
+        } else {
+            $circle = self::ELDER_CIRCLES[$legacyMember->First_Name . ' ' . $legacyMember->Last_Name];
+        }
+
+        if ($circle) {
             Leader::firstOrCreate([
                 'member_id' => $member->id,
                 'role_name' => $legacyMember->LeadershipRole,
-                'circle' => $this->getCircleFromCovenId($member->coven_id),
+                'circle' => $circle,
                 'leadership_date' => $legacyMember->Leadership_Date,
             ]);
+
         }
     }
 

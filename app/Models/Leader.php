@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Leader whereRoleName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Leader whereWheel($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|Leader whereCircle($value)
  */
 class Leader extends Model
 {
