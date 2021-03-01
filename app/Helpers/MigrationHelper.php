@@ -352,7 +352,7 @@ class MigrationHelper
             });
         } else {
             $coven = Coven::where('abbreviation', '=', $legacyMember->Coven)->first();
-            $member->covens()->attach($coven);
+            $member->covens()->attach($coven, ['is_current' => $legacyMember->Active]);
         }
     }
 
@@ -442,7 +442,7 @@ class MigrationHelper
     protected function createBondedForMember(Member $member, LegacyMember $legacyMember): void
     {
         if ($legacyMember->Bonded === 1 && $member->active === 1) {
-            if ($member->covens()->first()->id) {
+            if ($member->covens()->first() && $member->covens()->first()->id) {
                 $this->createBondedMember($member, $member->covens()->first()->id, $legacyMember->Bonded_Date);
             }
         }
