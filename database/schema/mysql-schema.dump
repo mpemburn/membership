@@ -61,6 +61,29 @@ CREATE TABLE `bondeds` (
   CONSTRAINT `fk_bondeds_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `circles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `circles` (
+  `circle` varchar(20) DEFAULT NULL,
+  UNIQUE KEY `unq_circles_name` (`circle`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `coven_member`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `coven_member` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `coven_id` bigint(20) unsigned NOT NULL,
+  `member_id` bigint(20) unsigned DEFAULT NULL,
+  `is_current` tinyint(4) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `fk_covens_member_covens` (`coven_id`),
+  KEY `fk_covens_member_members` (`member_id`),
+  CONSTRAINT `fk_covens_member_covens` FOREIGN KEY (`coven_id`) REFERENCES `covens` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_covens_member_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `covens`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -68,15 +91,15 @@ CREATE TABLE `covens` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `abbreviation` varchar(10) NOT NULL,
-  `wheel` varchar(20) DEFAULT NULL,
+  `circle` varchar(20) DEFAULT NULL,
   `element` varchar(20) DEFAULT NULL,
   `tool` varchar(20) DEFAULT NULL,
   `inception_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_covens_elements` (`element`),
-  KEY `fk_covens_wheels` (`wheel`),
-  CONSTRAINT `fk_covens_elements` FOREIGN KEY (`element`) REFERENCES `elements` (`element`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_covens_wheels` FOREIGN KEY (`wheel`) REFERENCES `wheels` (`wheel`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_covens_circles` (`circle`),
+  CONSTRAINT `fk_covens_circles` FOREIGN KEY (`circle`) REFERENCES `circles` (`circle`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_covens_elements` FOREIGN KEY (`element`) REFERENCES `elements` (`element`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `degree_types`;
@@ -136,7 +159,7 @@ CREATE TABLE `leaders` (
   `member_id` bigint(20) unsigned NOT NULL,
   `role_name` varchar(20) NOT NULL,
   `leadership_date` date DEFAULT NULL,
-  `wheel` varchar(20) DEFAULT NULL,
+  `circle` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_leaders_members` (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -174,16 +197,12 @@ CREATE TABLE `members` (
   `place_of_birth` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `coven_id` bigint(20) unsigned DEFAULT NULL,
   `current_degree_id` bigint(20) unsigned DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_members_sufixes` (`suffix_id`),
   KEY `fk_members_prefixes` (`prefix_id`),
-  KEY `fk_members_covens` (`coven_id`),
   KEY `fk_members_users` (`user_id`),
   KEY `fk_members_degrees_0` (`current_degree_id`),
-  CONSTRAINT `fk_members_covens` FOREIGN KEY (`coven_id`) REFERENCES `covens` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_members_prefixes` FOREIGN KEY (`prefix_id`) REFERENCES `prefixes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_members_sufixes` FOREIGN KEY (`suffix_id`) REFERENCES `suffixes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -478,14 +497,6 @@ CREATE TABLE `users_security_questions` (
   KEY `fk_users_security_questions_users` (`user_id`),
   CONSTRAINT `fk_users_security_questions_security_questions` FOREIGN KEY (`question_id`) REFERENCES `security_questions` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_users_security_questions_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `wheels`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `wheels` (
-  `wheel` varchar(20) DEFAULT NULL,
-  UNIQUE KEY `unq_wheels_name` (`wheel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

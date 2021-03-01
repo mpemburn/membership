@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $member_id
  * @property string $role_name
  * @property string|null $leadership_date
- * @property string|null $wheel
+ * @property string|null $circle
  * @method static \Illuminate\Database\Eloquent\Builder|Leader newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Leader newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Leader query()
@@ -32,7 +32,7 @@ class Leader extends Model
     public $fillable = [
         'member_id',
         'role_name',
-        'wheel',
+        'circle',
         'leadership_date',
     ];
 

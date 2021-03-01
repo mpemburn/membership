@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $name
  * @property string $abbreviation
- * @property string|null $wheel
+ * @property string|null $circle
  * @property string|null $element
  * @property string|null $tool
  * @property string|null $inception_date
@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Coven whereInceptionDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Coven whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Coven whereTool($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Coven whereWheel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Coven whereCircle($value)
  * @mixin \Eloquent
  */
 class Coven extends Model
@@ -39,7 +39,7 @@ class Coven extends Model
     protected $fillable = [
         'name',
         'abbreviation',
-        'wheel',
+        'circle',
         'element',
         'tool',
         'inception_date',

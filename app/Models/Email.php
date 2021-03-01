@@ -34,6 +34,7 @@ class Email extends Model
 
     protected $fillable = [
         'email',
+        'member_id',
         'is_primary',
         'description'
     ];

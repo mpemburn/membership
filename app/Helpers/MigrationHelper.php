@@ -26,7 +26,7 @@ use App\Models\SecurityQuestion;
 use App\Models\State;
 use App\Models\Suffix;
 use App\Models\User;
-use App\Models\Wheel;
+use App\Models\Circle;
 use App\Objects\PhoneParser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -44,7 +44,7 @@ class MigrationHelper
         'Earth' => 'Pentacle'
     ];
 
-    protected const WHEELS = [
+    protected const CIRCLES = [
         'Pisces',
         'Aquarius',
         'Capricorn',
@@ -130,6 +130,12 @@ class MigrationHelper
         '3:00 - 3:20 AM' => '3:20 AM'
     ];
 
+    protected const ELDER_CIRCLES = [
+        'Ivo Dominguez' => 'Pisces',
+        'Michael Smith' => 'Pisces',
+        'Robin Fennelly' => 'Capricorn',
+    ];
+
     public static function run(): void
     {
         $instance = new static();
@@ -165,16 +171,19 @@ class MigrationHelper
     public function migrateFromLegacyMembers(): void
     {
         Member::truncate();
+        Email::truncate();
+        Address::truncate();
+        Degree::truncate();
         PhoneNumber::truncate();
+        Leader::truncate();
+        Bonded::truncate();
         LegacyMember::all()->each(function (LegacyMember $legacyMember) {
-            $fromLegacy = $legacyMember->toArray();
-            $emailAddresses = $this->extractEmailAddresses($legacyMember->Email_Address);
 //                !d($legacyMember->First_Name, $legacyMember->Last_Name);
+            $emailAddresses = $this->extractEmailAddresses($legacyMember->Email_Address);
             $member = Member::firstOrCreate([
                 'active' => $legacyMember->Active,
                 'user_id' => $this->getUserIdFromEmail($legacyMember->Email_Address),
-                'coven_id' => $this->getCovenIdFromName($legacyMember->Coven),
-                'email' => $emailAddresses->first(),
+//                'coven_id' => $this->getCovenIdFromName($legacyMember->Coven),
                 'first_name' => $legacyMember->First_Name,
                 'middle_name' => $legacyMember->Middle_Name,
                 'last_name' => $legacyMember->Last_Name,
@@ -188,10 +197,11 @@ class MigrationHelper
             ]);
 //            !d($member->toArray());
             $this->createEmailAddressesForMember($member, $emailAddresses);
+            $this->createCovensForMember($member, $legacyMember);
             $this->createMailingAddressesForMember($member, $legacyMember);
             $this->createDegreesForMember($member, $legacyMember);
             $this->createPhonesForMember($member, $legacyMember);
-            $this->createLeadershipRolesForMember($member, $legacyMember);
+//            $this->createLeadersForMember($member, $legacyMember);
             $this->createBondedForMember($member, $legacyMember);
         });
     }
@@ -235,10 +245,10 @@ class MigrationHelper
             ]);
         });
 
-        Wheel::truncate();
-        collect(self::WHEELS)->each(static function ($wheel) {
-            Wheel::firstOrCreate([
-                'wheel' => $wheel
+        Circle::truncate();
+        collect(self::CIRCLES)->each(static function ($circle) {
+            Circle::firstOrCreate([
+                'circle' => $circle
             ]);
         });
 
@@ -271,7 +281,7 @@ class MigrationHelper
                 Coven::firstOrCreate([
                     'name' => $legacyCoven->CovenFullName,
                     'abbreviation' => $legacyCoven->Coven,
-                    'wheel' => $legacyCoven->Wheel,
+                    'circle' => $legacyCoven->Wheel,
                     'element' => $legacyCoven->Element,
                     'tool' => $legacyCoven->Tool,
                     'inception_date' => $this->getDateString($legacyCoven->InceptionDate),
@@ -281,13 +291,12 @@ class MigrationHelper
 
         LegacyGuild::all()->each(function (LegacyGuild $legacyGuild) {
             $leaderMember = LegacyMember::find($legacyGuild->LeaderMemberID);
-            $newMember = Member::where('email', '=', $leaderMember->Email_Address)
-                ->first();
+            $newMember = (new Member())->getByPrimaryEmail($leaderMember->Email_Address);
             Order::firstOrCreate([
                 'abbreviation' => $legacyGuild->GuildID,
                 'name' => $legacyGuild->GuildName,
                 'description' => $legacyGuild->Description,
-                'leader_member_id' => $newMember->id ?? null,
+                'leader_member_id' => $newMember && $newMember->first() ? $newMember->first()->id : null,
             ]);
         });
 
@@ -331,6 +340,20 @@ class MigrationHelper
 
             $isPrimary = false;
         });
+    }
+
+    protected function createCovensForMember(Member $member, LegacyMember $legacyMember): void
+    {
+        if ($legacyMember->LeadershipRole === 'ELDER') {
+            // Elders are bonded to all covens in their Circle
+            $elderCircle = self::ELDER_CIRCLES[$legacyMember->First_Name . ' ' . $legacyMember->Last_Name];
+            Coven::where('circle', '=', $elderCircle)->each(function (Coven $coven) use ($member) {
+                $this->createBondedMember($member, $coven->id, null);
+            });
+        } else {
+            $coven = Coven::where('abbreviation', '=', $legacyMember->Coven)->first();
+            $member->covens()->attach($coven);
+        }
     }
 
     protected function createMailingAddressesForMember(Member $member, LegacyMember $legacyMember): void
@@ -404,13 +427,13 @@ class MigrationHelper
         //vaxM3Now
     }
 
-    protected function createLeadershipRolesForMember(Member $member, LegacyMember $legacyMember): void
+    protected function createLeadersForMember(Member $member, LegacyMember $legacyMember): void
     {
         if ($legacyMember->LeadershipRole) {
             Leader::firstOrCreate([
                 'member_id' => $member->id,
                 'role_name' => $legacyMember->LeadershipRole,
-                'wheel' => $this->getWheelFromCovenId($member->coven_id),
+                'circle' => $this->getCircleFromCovenId($member->coven_id),
                 'leadership_date' => $legacyMember->Leadership_Date,
             ]);
         }
@@ -418,13 +441,20 @@ class MigrationHelper
 
     protected function createBondedForMember(Member $member, LegacyMember $legacyMember): void
     {
-//        if ($legacyMember->Bonded === 1 && $member->active === 1) {
-//            Bonded::firstOrCreate([
-//                'member_id' => $member->id,
-//                'coven_id' => $member->coven_id,
-//                'bonded_date' => $legacyMember->Bonded_Date
-//            ]);
-//        }
+        if ($legacyMember->Bonded === 1 && $member->active === 1) {
+            if ($member->covens()->first()->id) {
+                $this->createBondedMember($member, $member->covens()->first()->id, $legacyMember->Bonded_Date);
+            }
+        }
+    }
+
+    protected function createBondedMember(Member $member, int $covenId, ?string $date): void
+    {
+        Bonded::firstOrCreate([
+            'member_id' => $member->id,
+            'coven_id' => $covenId,
+            'bonded_date' => $date
+        ]);
     }
 
     protected function cleanAttributes(array $attributes): array
@@ -451,11 +481,11 @@ class MigrationHelper
         return $coven && $coven->exists() ? $coven->first()->id : null;
     }
 
-    protected function getWheelFromCovenId($covenId)
+    protected function getCircleFromCovenId($covenId)
     {
         $coven = Coven::find($covenId);
 
-        return $coven && $coven->exists() ? $coven->first()->wheel : null;
+        return $coven && $coven->exists() ? $coven->first()->circle : null;
     }
 
     protected function getDateString(string $dateString): ?string

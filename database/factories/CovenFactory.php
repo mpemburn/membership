@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Coven;
 use App\Models\Element;
-use App\Models\Wheel;
+use App\Models\Circle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CovenFactory extends Factory
@@ -26,7 +26,7 @@ class CovenFactory extends Factory
         return [
             'name' => $this->faker->word,
             'abbreviation' => $this->faker->lexify('???'),
-            'wheel' => Wheel::factory()->create()->wheel,
+            'circle' => Circle::factory()->create()->circle,
             'element' => Element::factory()->create()->element,
         ];
     }

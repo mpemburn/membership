@@ -2,17 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\Wheel;
+use App\Models\Circle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class WheelFactory extends Factory
+class CircleFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Wheel::class;
+    protected $model = Circle::class;
 
     /**
      * Define the model's default state.
@@ -22,7 +22,7 @@ class WheelFactory extends Factory
     public function definition()
     {
         return [
-            'wheel' => $this->faker->word
+            'circle' => $this->faker->word
         ];
     }
 }

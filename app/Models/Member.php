@@ -96,6 +96,22 @@ class Member extends Model
         'coven_id',
     ];
 
+    public function getByPrimaryEmail(?string $emailAddress): ?BelongsTo
+    {
+        if (! $emailAddress) {
+            return null;
+        }
+
+        $email = Email::where('email', '=', $emailAddress)
+            ->where('is_primary', '=', 1)
+            ->first();
+        if ($email) {
+            return $email->member() ?: null;
+        }
+
+        return null;
+    }
+
     public function user(): HasOne
     {
         return $this->hasOne(User::class);
@@ -116,6 +132,11 @@ class Member extends Model
         return $this->hasMany(Email::class);
     }
 
+    public function covens(): BelongsToMany
+    {
+        return $this->belongsToMany(Coven::class);
+    }
+
     public function phoneNumber(): HasMany
     {
         return $this->hasMany(PhoneNumber::class);
@@ -124,11 +145,6 @@ class Member extends Model
     public function degrees(): HasMany
     {
         return $this->hasMany(Degree::class);
-    }
-
-    public function coven(): BelongsTo
-    {
-        return $this->belongsTo(Coven::class);
     }
 
     public function addresses(): BelongsToMany
