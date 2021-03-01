@@ -77,6 +77,8 @@ CREATE TABLE `coven_member` (
   `coven_id` bigint(20) unsigned NOT NULL,
   `member_id` bigint(20) unsigned DEFAULT NULL,
   `is_current` tinyint(4) DEFAULT 0,
+  `join_date` date DEFAULT NULL,
+  `release_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_covens_member_covens` (`coven_id`),
   KEY `fk_covens_member_members` (`member_id`),
