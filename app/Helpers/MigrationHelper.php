@@ -24,6 +24,7 @@ use App\Models\Member;
 use App\Models\Order;
 use App\Models\PhoneNumber;
 use App\Models\Prefix;
+use App\Models\Pronoun;
 use App\Models\SecurityQuestion;
 use App\Models\State;
 use App\Models\Suffix;
@@ -88,6 +89,18 @@ class MigrationHelper
         'G.P.',
         'P.A.',
         'Partner',
+    ];
+
+    protected const PREFERRED_GENDER_PRONOUNS = [
+        'She/Her/Hers/Herself',
+        'He/Him/His/Himself',
+        'Ze/Zim/Zirs/Zirself',
+        'Zie/Hir/Hirs/Hirself',
+        'Sie/Hir/Hirs/Hirself',
+        'Zie/Zir/Zirs/Zirself',
+        'Ey/Em/Eirs/Eirself',
+        'Per/Per/Pers/Perssself',
+        'They/Them/Theirs/Themself'
     ];
 
     protected const ADDRESS_TYPES = [
@@ -224,6 +237,13 @@ class MigrationHelper
         collect(self::PREFIXES)->each(static function ($prefix) {
             Prefix::firstOrCreate([
                 'prefix' => $prefix
+            ]);
+        });
+
+        Pronoun::truncate();
+        collect(self::PREFERRED_GENDER_PRONOUNS)->each(static function ($pronouns) {
+            Pronoun::firstOrCreate([
+                'pronouns' => $pronouns
             ]);
         });
 

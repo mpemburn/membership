@@ -74,6 +74,8 @@ use Illuminate\Notifications\Notifiable;
  * @property-read int|null $phone_number_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Coven[] $covens
  * @property-read int|null $covens_count
+ * @property string|null $pronouns
+ * @method static \Illuminate\Database\Eloquent\Builder|Member wherePronouns($value)
  */
 class Member extends Model
 {

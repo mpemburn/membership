@@ -218,7 +218,9 @@ CREATE TABLE `members` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `current_degree_id` bigint(20) unsigned DEFAULT NULL,
+  `pronouns` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `unq_members_pronouns` (`pronouns`),
   KEY `fk_members_sufixes` (`suffix_id`),
   KEY `fk_members_prefixes` (`prefix_id`),
   KEY `fk_members_users` (`user_id`),
@@ -417,6 +419,16 @@ CREATE TABLE `prefixes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `prefix` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `pronouns`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pronouns` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `pronouns` varchar(60) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unq_pronouns_pronouns` (`pronouns`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `role_has_permissions`;
