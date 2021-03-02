@@ -168,6 +168,20 @@ CREATE TABLE `emails` (
   CONSTRAINT `fk_emails_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `emergency_contacts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `emergency_contacts` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `member_id` bigint(20) unsigned DEFAULT NULL,
+  `contact_name` varchar(100) NOT NULL,
+  `contact_phone_id` bigint(20) unsigned DEFAULT NULL,
+  `relationship` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_emergency_contacts_phone_numbers` (`contact_phone_id`),
+  CONSTRAINT `fk_emergency_contacts_phone_numbers` FOREIGN KEY (`contact_phone_id`) REFERENCES `phone_numbers` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `leaders`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -219,6 +233,8 @@ CREATE TABLE `members` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `current_degree_id` bigint(20) unsigned DEFAULT NULL,
   `pronouns` varchar(60) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_solitary` tinyint(4) DEFAULT NULL,
+  `solitary_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unq_members_pronouns` (`pronouns`),
   KEY `fk_members_sufixes` (`suffix_id`),
@@ -228,20 +244,6 @@ CREATE TABLE `members` (
   CONSTRAINT `fk_members_prefixes` FOREIGN KEY (`prefix_id`) REFERENCES `prefixes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_members_sufixes` FOREIGN KEY (`suffix_id`) REFERENCES `suffixes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `members_notes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `members_notes` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `member_id` bigint(20) unsigned NOT NULL,
-  `note_id` bigint(20) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_members_notes_members` (`member_id`),
-  KEY `fk_members_notes_notes` (`note_id`),
-  CONSTRAINT `fk_members_notes_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_members_notes_notes` FOREIGN KEY (`note_id`) REFERENCES `notes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `migrations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -282,8 +284,14 @@ DROP TABLE IF EXISTS `notes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `notes` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `member_id` bigint(20) unsigned NOT NULL,
   `note` text DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `fk_members_notes_members` (`member_id`),
+  KEY `fk_members_notes_notes` (`note`(768)),
+  CONSTRAINT `fk_members_notes_members` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `oauth_access_tokens`;

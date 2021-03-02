@@ -11,6 +11,7 @@ use App\Models\Degree;
 use App\Models\DegreeType;
 use App\Models\Element;
 use App\Models\Email;
+use App\Models\EmergencyContact;
 use App\Models\Leader;
 use App\Models\LeadershipRole;
 use App\Models\Legacy\LegacyCoven;
@@ -21,6 +22,7 @@ use App\Models\Legacy\LegacyState;
 use App\Models\Legacy\LegacyUser;
 use App\Models\Legacy\LegacyMember;
 use App\Models\Member;
+use App\Models\Note;
 use App\Models\Order;
 use App\Models\PhoneNumber;
 use App\Models\Prefix;
@@ -192,6 +194,7 @@ class MigrationHelper
         PhoneNumber::truncate();
         Leader::truncate();
         Bonded::truncate();
+        Note::truncate();
         // Truncate the pivot tables
         DB::table('address_member')->truncate();
         DB::table('coven_member')->truncate();
@@ -212,6 +215,8 @@ class MigrationHelper
                 'time_of_birth' => $this->getTimeString($legacyMember->Birth_Time),
                 'place_of_birth' => $legacyMember->Birth_Place,
                 'current_degree_id' => $legacyMember->Degree,
+                'is_solitary' => $legacyMember->Solitary,
+                'solitary_date' => $legacyMember->Solitary_Date,
             ]);
 //            !d($member->toArray());
             $this->createEmailAddressesForMember($member, $emailAddresses);
@@ -221,6 +226,7 @@ class MigrationHelper
             $this->createPhonesForMember($member, $legacyMember);
             $this->createLeadersForMember($member, $legacyMember);
             $this->createBondedForMember($member, $legacyMember);
+            $this->createNotesForMember($member, $legacyMember);
         });
     }
 
@@ -512,6 +518,17 @@ class MigrationHelper
             'coven_id' => $covenId,
             'bonded_date' => $date
         ]);
+    }
+
+    protected function createNotesForMember(Member $member, LegacyMember $legacyMember): void
+    {
+        if ($legacyMember->Comments) {
+            //!d($legacyMember->Comments);
+            Note::firstOrCreate([
+                'member_id' => $member->id,
+                'note' => $legacyMember->Comments
+            ]);
+        }
     }
 
     protected function cleanAttributes(array $attributes): array

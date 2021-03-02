@@ -76,6 +76,10 @@ use Illuminate\Notifications\Notifiable;
  * @property-read int|null $covens_count
  * @property string|null $pronouns
  * @method static \Illuminate\Database\Eloquent\Builder|Member wherePronouns($value)
+ * @property int|null $is_solitary
+ * @property string|null $solitary_date
+ * @method static \Illuminate\Database\Eloquent\Builder|Member whereIsSolitary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Member whereSolitaryDate($value)
  */
 class Member extends Model
 {
@@ -97,7 +101,8 @@ class Member extends Model
         'time_of_birth',
         'place_of_birth',
         'current_degree_id',
-        'coven_id',
+        'is_solitary',
+        'solitary_date',
     ];
 
     public function getByPrimaryEmail(?string $emailAddress): ?BelongsTo
