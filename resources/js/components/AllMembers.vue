@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3 class="text-center">All members</h3><br/>
+        <h3 class="text-center">All Members</h3><br/>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -17,7 +17,7 @@
                 <td>{{ member.id }}</td>
                 <td>{{ member.first_name }}</td>
                 <td>{{ member.last_name }}</td>
-                <td>{{ member.created_at }}</td>
+                <td>{{ member.phone_number[0].number }} ({{ member.phone_number[0].type }})</td>
                 <td>{{ member.updated_at }}</td>
                 <td>
                     <div class="btn-group" role="group">
@@ -43,7 +43,6 @@ export default {
         this.axios
             .get('https://membership.test/api/members')
             .then(response => {
-                console.log(response);
                 this.members = response.data.members;
             });
     },

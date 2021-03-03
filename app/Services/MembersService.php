@@ -85,7 +85,13 @@ class MembersService
 
     public function getAllMembers(Request $request): JsonResponse
     {
-        $members = Member::query()->get();
+        $filter = static function ($query) {
+            $query->isPrimary();
+        };
+
+        $members = Member::query()
+            ->with(['phoneNumber' => $filter])
+            ->whereHas('phoneNumber', $filter)->get();
 
         if ($members->isNotEmpty()) {
             return response()->json([

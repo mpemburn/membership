@@ -14,10 +14,10 @@ use App\Helpers\MigrationHelper;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+//Route::get('/', function () {
+//    return view('welcome');
+//});
+//
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', function () {
@@ -32,7 +32,9 @@ Route::group(['middleware' => 'auth'], function () {
 Route::get('test', function () {
     MigrationHelper::run();
 });
-Route::get('vue', function () {
-    return view('layouts.vue-app');});
+
+Route::get('{any}', function () {
+    return view('layouts.vue-app');
+})->where('any','.*');
 
 require __DIR__ . '/auth.php';

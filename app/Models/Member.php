@@ -105,6 +105,11 @@ class Member extends Model
         'solitary_date',
     ];
 
+    protected $with = [
+        'emails',
+        'covens',
+    ];
+
     public function getByPrimaryEmail(?string $emailAddress): ?BelongsTo
     {
         if (! $emailAddress) {
@@ -112,7 +117,7 @@ class Member extends Model
         }
 
         $email = Email::where('email', '=', $emailAddress)
-            ->where('is_primary', '=', 1)
+            ->where('is_primary', '=', true)
             ->first();
         if ($email) {
             return $email->member() ?: null;

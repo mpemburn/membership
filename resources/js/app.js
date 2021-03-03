@@ -1,11 +1,3 @@
-import Comparator from "./comparator";
-import RequestAjax from "./request-ajax";
-import Modal from './modal';
-import Confirmation from './confirmation';
-import DatatablesManager from './datatables-manager';
-import PermissionsManager from './permissions-manager';
-import UserRolesManager from './user-roles-manager';
-
 import App from './App.vue';
 import Vue from 'vue/dist/vue';
 import VueRouter from 'vue-router';
@@ -15,7 +7,6 @@ import {routes} from './routes';
 
 window.Vue = require('vue');
 
-window.$ = require('jquery');
 require('./bootstrap');
 require('alpinejs');
 require('datatables.net')
@@ -34,6 +25,17 @@ const app = new Vue({
     router: router,
     render: h => h(App),
 });
+
+// TODO: Replace with Vue
+import Comparator from "./comparator";
+import RequestAjax from "./request-ajax";
+import Modal from './modal';
+import Confirmation from './confirmation';
+import DatatablesManager from './datatables-manager';
+import PermissionsManager from './permissions-manager';
+import UserRolesManager from './user-roles-manager';
+
+window.$ = require('jquery');
 
 let ajax = new RequestAjax();
 let comparator = new Comparator();
