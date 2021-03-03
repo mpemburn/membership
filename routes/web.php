@@ -32,5 +32,7 @@ Route::group(['middleware' => 'auth'], function () {
 Route::get('test', function () {
     MigrationHelper::run();
 });
+Route::get('vue', function () {
+    return view('layouts.vue-app');});
 
 require __DIR__ . '/auth.php';

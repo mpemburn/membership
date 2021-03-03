@@ -90,7 +90,7 @@ class MembersService
         if ($members->isNotEmpty()) {
             return response()->json([
                 'success' => true,
-                'data' => $members->toArray()
+                'members' => $members->toArray()
             ]);
         }
         $this->validator->addError('No members found.');

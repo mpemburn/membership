@@ -22,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/members', MembersController::class . '@index');
+
 Route::middleware('auth:api')->group( function () {
     Route::post('/roles/create', RolesController::class . '@create');
     Route::put('/roles/update', RolesController::class . '@update');
@@ -40,7 +43,7 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/member_coven', MembersController::class . '@addMemberToCoven');
     Route::put('member_update/{member_id}', [MembersController::class, 'updateMember']);
 
-    Route::get('/members', MembersController::class . '@index');
+//    Route::get('/members', MembersController::class . '@index');
     Route::get('/member/{id}', MembersController::class . '@show');
 //
 //    Route::get('/covens', CovenController::class . '@show');
