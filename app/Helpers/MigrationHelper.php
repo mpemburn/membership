@@ -442,7 +442,7 @@ class MigrationHelper
     protected function createPhonesForMember(Member $member, LegacyMember $legacyMember): void
     {
         collect(self::PHONE_TYPE_FIELD_NAMES)->each(function (string $fieldName, int $key) use ($legacyMember, $member, &$highestDegree) {
-            $isPrimary = ($key === $legacyMember->Primary_Phone);
+            $isPrimary = (($key + 1) === $legacyMember->Primary_Phone);
             $type = str_replace('_Phone', '', $fieldName);
             $testNumber = trim($legacyMember->{$fieldName});
 
