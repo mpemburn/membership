@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,11 +35,16 @@ class PhoneNumber extends Model
     public $timestamps = false;
 
     public $fillable = [
-        'phone_number',
+        'number',
         'member_id',
         'country_code',
         'extension',
         'type',
         'is_primary'
     ];
+
+    public function scopeIsPrimary(Builder $query): Builder
+    {
+        return $query->where('is_primary', '=', true);
+    }
 }
