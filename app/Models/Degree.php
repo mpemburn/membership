@@ -30,10 +30,11 @@ class Degree extends Model
     public $timestamps = false;
 
     public $fillable = [
+        'member_id',
         'degree',
-        'member_id',
-        'member_id',
-        'initiation_date'
+        'degree_id',
+        'initiation_date',
+        'is_current'
     ];
 
     public function member(): BelongsTo

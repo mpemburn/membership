@@ -139,6 +139,8 @@ CREATE TABLE `degrees` (
   `degree` varchar(20) NOT NULL,
   `initiation_date` date DEFAULT NULL,
   `member_id` bigint(20) unsigned DEFAULT NULL,
+  `is_current` tinyint(4) DEFAULT 0,
+  `degree_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_degrees_degree_types` (`degree`),
   KEY `fk_degrees_members` (`member_id`),

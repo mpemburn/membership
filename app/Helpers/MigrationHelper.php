@@ -431,11 +431,14 @@ class MigrationHelper
     {
         collect(self::DEGREE_DATE_FIELD_NAMES)->each(function (string $degree, string $fieldName) use ($legacyMember, $member, &$highestDegree) {
             $degreeDate = $legacyMember->{$fieldName};
+            $degreeId = (int)$degree;
             if ($degreeDate) {
                 $attributes = [
                     'member_id' => $member->id,
                     'degree' => $degree,
-                    'initiation_date' => $degreeDate
+                    'degree_id' => $degreeId,
+                    'initiation_date' => $degreeDate,
+                    'is_current' => ($degreeId === $legacyMember->Degree)
                 ];
                 Degree::firstOrCreate($attributes);
             }

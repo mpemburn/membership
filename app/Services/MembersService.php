@@ -95,6 +95,7 @@ class MembersService
             ->with('primaryEmail')
             ->with('primaryPhone')
             ->with('currentCoven')
+            ->with('currentDegree')
             ->orderBy('last_name')
             ->orderBy('first_name')->get();
 

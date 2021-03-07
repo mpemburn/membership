@@ -185,6 +185,12 @@ class Member extends Model
         return $this->hasMany(Degree::class);
     }
 
+    public function currentDegree(): HasMany
+    {
+        return $this->hasMany(Degree::class)
+            ->where('is_current', '=', true);
+    }
+
     public function addresses(): BelongsToMany
     {
         return $this->belongsToMany(Address::class);
