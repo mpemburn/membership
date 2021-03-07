@@ -299,17 +299,14 @@ export default {
     },
     methods: {
         getAddress: value => {
-            console.log(value);
             return value[0].address_1;
         },
 
         getCovenAbbrev: value => {
-            console.log(value);
-            return value[0];
+            return value[0] ? value[0].abbreviation : null;
         },
 
         getEmail: value => {
-            console.log(value);
             return value[0].email;
         },
 
