@@ -210,6 +210,7 @@ const formatDate = value => {
     }
     return "";
 };
+let initialData = null;
 
 export default {
     name: "app",
@@ -345,6 +346,7 @@ export default {
 
         loadData: function (data) {
             this.data = data;
+            initialData = data;
         }
     }
 };
