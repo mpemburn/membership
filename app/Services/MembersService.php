@@ -90,8 +90,13 @@ class MembersService
         };
 
         $members = Member::query()
-            ->with(['phoneNumber' => $filter])
-            ->whereHas('phoneNumber', $filter)->get();
+            ->where('active', '=', true)
+            ->with('primaryAddress')
+            ->with('primaryEmail')
+            ->with('primaryPhone')
+            ->with('currentCoven')
+            ->orderBy('last_name')
+            ->orderBy('first_name')->get();
 
         if ($members->isNotEmpty()) {
             return response()->json([

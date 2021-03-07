@@ -399,6 +399,9 @@ class MigrationHelper
 
     protected function createMailingAddressesForMember(Member $member, LegacyMember $legacyMember): void
     {
+        if (! $legacyMember->Address1) {
+            return;
+        }
         $attributes = $this->cleanAttributes([
             'address_1' => $legacyMember->Address1 ?? 'Unknown',
             'address_2' => $legacyMember->Address2,
@@ -406,7 +409,8 @@ class MigrationHelper
             'city' => $legacyMember->City ?? 'Unknown',
             'state' => $legacyMember->State ?? 'N/A',
             'zip' => $legacyMember->Zip ?? 'Unknown',
-            'address_type' => $this->setAddressType($legacyMember->Address1)
+            'address_type' => $this->setAddressType($legacyMember->Address1),
+            'is_primary' => 1
         ]);
 
         $address = Address::firstOrCreate($attributes);
@@ -451,7 +455,7 @@ class MigrationHelper
                 $phoneNumber = $parser->parse($testNumber)->format();
                 $extension = $parser->getExtension();
                 $attributes = [
-                    'phone_number' => $phoneNumber,
+                    'number' => $phoneNumber,
                     'member_id' => $member->id,
                     'extension' => $extension,
                     'type' => $type,
@@ -487,7 +491,7 @@ class MigrationHelper
             } else {
                 $circle = $this->getCircleFromCovenId($covenId);
             }
-        } else {
+        } else if (in_array($legacyMember->First_Name . ' ' . $legacyMember->Last_Name, self::ELDER_CIRCLES)) {
             $circle = self::ELDER_CIRCLES[$legacyMember->First_Name . ' ' . $legacyMember->Last_Name];
         }
 

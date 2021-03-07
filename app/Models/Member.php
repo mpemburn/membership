@@ -151,14 +151,33 @@ class Member extends Model
         return $this->hasMany(Email::class);
     }
 
+    public function primaryEmail(): HasMany
+    {
+        return $this->hasMany(Email::class)
+            ->where('is_primary', '=', true);
+    }
+
     public function covens(): BelongsToMany
     {
-        return $this->belongsToMany(Coven::class)->withPivot('is_current');
+        return $this->belongsToMany(Coven::class)
+            ->withPivot('is_current');
+    }
+
+    public function currentCoven(): BelongsToMany
+    {
+        return $this->belongsToMany(Coven::class)
+            ->wherePivot('is_current', '=', true);
     }
 
     public function phoneNumber(): HasMany
     {
         return $this->hasMany(PhoneNumber::class);
+    }
+
+    public function primaryPhone(): HasMany
+    {
+        return $this->hasMany(PhoneNumber::class)
+            ->where('is_primary', '=', true);
     }
 
     public function degrees(): HasMany
@@ -169,5 +188,11 @@ class Member extends Model
     public function addresses(): BelongsToMany
     {
         return $this->belongsToMany(Address::class);
+    }
+
+    public function primaryAddress(): BelongsToMany
+    {
+        return $this->belongsToMany(Address::class)
+            ->where('is_primary', '=', true);
     }
 }
