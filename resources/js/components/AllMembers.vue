@@ -67,118 +67,6 @@
     margin: 0 15px;
 }
 
-/* Datatable CSS */
-#v-datatable-light .header-item {
-    cursor: pointer;
-    color: #337ab7;
-    transition: color 0.15s ease-in-out;
-}
-
-#v-datatable-light .header-item:hover {
-    color: #ed9b19;
-}
-
-#v-datatable-light .header-item.no-sortable {
-    cursor: default;
-}
-#v-datatable-light .header-item.no-sortable:hover {
-    color: #337ab7;
-}
-
-#v-datatable-light .header-item .th-wrapper {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    font-weight: bold;
-}
-
-#v-datatable-light .header-item .th-wrapper.checkboxes {
-    justify-content: center;
-}
-
-#v-datatable-light .header-item .th-wrapper .arrows-wrapper {
-    display: flex;
-    flex-direction: column;
-    margin-left: 10px;
-    justify-content: space-between;
-}
-
-#v-datatable-light .header-item .th-wrapper .arrows-wrapper.centralized {
-    justify-content: center;
-}
-
-#v-datatable-light .arrow {
-    transition: color 0.15s ease-in-out;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-}
-
-#v-datatable-light .arrow.up {
-    border-bottom: 8px solid #337ab7;
-}
-
-#v-datatable-light .arrow.up:hover {
-    border-bottom: 8px solid #ed9b19;
-}
-
-#v-datatable-light .arrow.down {
-    border-top: 8px solid #337ab7;
-}
-
-#v-datatable-light .arrow.down:hover {
-    border-top: 8px solid #ed9b19;
-}
-
-#v-datatable-light .footer {
-    display: flex;
-    justify-content: space-between;
-    width: 500px;
-}
-/* End Datatable CSS */
-
-/* Pagination CSS */
-#v-datatable-light-pagination {
-    list-style: none;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin: 0;
-    padding: 0;
-    width: 300px;
-    height: 30px;
-}
-
-#v-datatable-light-pagination .pagination-item {
-    width: 30px;
-    margin-right: 5px;
-    font-size: 16px;
-    transition: color 0.15s ease-in-out;
-}
-
-#v-datatable-light-pagination .pagination-item.selected {
-    color: #ed9b19;
-}
-
-#v-datatable-light-pagination .pagination-item .page-btn {
-    background-color: transparent;
-    outline: none;
-    border: none;
-    color: #337ab7;
-    transition: color 0.15s ease-in-out;
-}
-
-#v-datatable-light-pagination .pagination-item .page-btn:hover {
-    color: #ed9b19;
-}
-
-#v-datatable-light-pagination .pagination-item .page-btn:disabled {
-    cursor: not-allowed;
-    box-shadow: none;
-    opacity: 0.65;
-}
-/* END PAGINATION CSS */
 
 /* ITEMS PER PAGE DROPDOWN CSS */
 .item-per-page-dropdown {
@@ -230,7 +118,6 @@ export default {
     data: function() {
         return {
             headerFields: [
-                "__slot:checkboxes",
                 {
                     name: "first_name",
                     label: "First Name",
@@ -248,22 +135,34 @@ export default {
                     format: this.getAddress
                 },
                 {
-                    name: "date_of_birth",
-                    label: "Date of Birth",
-                    format: formatDate,
-                    sortable: true
+                    name: "primary_address",
+                    label: "City",
+                    sortable: true,
+                    format: this.getCity
                 },
                 {
-                    name: "current_coven",
-                    label: "Coven",
+                    name: "primary_address",
+                    label: "State",
                     sortable: true,
-                    format: this.getCovenAbbrev
+                    format: this.getState
+                },
+                {
+                    name: "primary_address",
+                    label: "Zip",
+                    sortable: true,
+                    format: this.getZip
                 },
                 {
                     name: "primary_email",
                     label: "Email",
                     sortable: true,
                     format: this.getEmail
+                },
+                {
+                    name: "current_coven",
+                    label: "Coven",
+                    sortable: true,
+                    format: this.getCovenAbbrev
                 },
                 "__slot:actions"
             ],
@@ -300,7 +199,19 @@ export default {
     },
     methods: {
         getAddress: value => {
-            return value[0].address_1;
+            return value[0] ? value[0].address_1 : null;
+        },
+
+        getCity: value => {
+            return value[0] ? value[0].city : null;
+        },
+
+        getState: value => {
+            return value[0] ? value[0].state : null;
+        },
+
+        getZip: value => {
+            return value[0] ? value[0].zip : null;
         },
 
         getCovenAbbrev: value => {
@@ -308,7 +219,7 @@ export default {
         },
 
         getEmail: value => {
-            return value[0].email;
+            return value[0] ? value[0].email : null;
         },
 
         dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
