@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Models\Member;
 use Illuminate\Support\Facades\Route;
 use App\Helpers\MigrationHelper;
 /*
@@ -33,6 +34,7 @@ Route::get('test', function () {
     MigrationHelper::run();
 });
 
+// Get Vue routes
 Route::get('{any}', function () {
     return view('layouts.vue-app');
 })->where('any','.*');

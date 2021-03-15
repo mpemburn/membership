@@ -4,6 +4,8 @@
 namespace App\Services;
 
 
+use App\Models\Coven;
+use App\Models\Degree;
 use App\Models\Member;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -90,7 +92,7 @@ class MembersService
         };
 
         $members = Member::query()
-            ->where('active', '=', true)
+            ->where('active', '=', 1)
             ->with('primaryAddress')
             ->with('primaryEmail')
             ->with('primaryPhone')
@@ -102,11 +104,29 @@ class MembersService
         if ($members->isNotEmpty()) {
             return response()->json([
                 'success' => true,
-                'members' => $members->toArray()
+                'members' => $members->toArray(),
+                'covens' => $this->getCovenList(),
+                'degrees' => $this->getDegreeList()
             ]);
         }
         $this->validator->addError('No members found.');
 
         return response()->json(['error' => $this->validator->getMessage()], 400);
+    }
+
+    protected function getCovenList(): array
+    {
+        return Coven::all()
+            ->sortBy('abbreviation')
+            ->pluck('name', 'abbreviation')
+            ->toArray();
+    }
+
+    protected function getDegreeList(): array
+    {
+        return Degree::all()
+            ->sortBy('degree')
+            ->pluck('degree', 'degree')
+            ->toArray();
     }
 }

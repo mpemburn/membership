@@ -1,264 +1,102 @@
 <template>
-    <div id="app">
-        <h3 class="title">v-Datatable example</h3>
-        <DataTable
-            :header-fields="headerFields"
-            :sort-field="sortField"
-            :sort="sort"
-            :data="data || []"
-            :is-loading="isLoading"
-            :css="datatableCss"
-            not-found-msg="Items not found"
-            @onUpdate="dtUpdateSort"
-            trackBy="first_name"
-        >
-            <input
-                slot="actions"
-                slot-scope="props"
-                type="button"
-                class="btn btn-info"
-                value="Edit"
-                @click="dtEditClick(props);"
-            >
-            <Pagination
-                slot="pagination"
-                :page="currentPage"
-                :total-items="totalItems"
-                :items-per-page="itemsPerPage"
-                :css="paginationCss"
-                @onUpdate="changePage"
-                @updateCurrentPage="updateCurrentPage"
-            />
-            <div class="items-per-page" slot="ItemsPerPage">
-                <label>Items per page</label>
-                <ItemsPerPageDropdown
-                    :list-items-per-page="listItemsPerPage"
-                    :items-per-page="itemsPerPage"
-                    :css="itemsPerPageCss"
-                    @onUpdate="updateItemsPerPage"
-                />
-            </div>
-            <Spinner slot="spinner"/>
-        </DataTable>
+    <div class="">
+        <table id="members-table" class="stripe">
+            <thead>
+            <tr>
+                <th v-for="header in headers">{{ header.text }}</th>
+            </tr>
+            </thead>
+            <tr>
+                <th v-for="header in headers" :data-id="header.value" style="background-color: white">{{ header.filter }}</th>
+            </tr>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </template>
-<style>
-#app {
-    font-family: "Avenir", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-}
-
-#app .title {
-    margin-bottom: 30px;
-}
-
-#app .items-per-page {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    color: #337ab7;
-}
-
-#app .items-per-page label {
-    margin: 0 15px;
-}
-
-
-/* ITEMS PER PAGE DROPDOWN CSS */
-.item-per-page-dropdown {
-    background-color: transparent;
-    min-height: 30px;
-    border: 1px solid #337ab7;
-    border-radius: 5px;
-    color: #337ab7;
-}
-.item-per-page-dropdown:hover {
-    cursor: pointer;
-}
-/* END ITEMS PER PAGE DROPDOWN CSS */
-</style>
-
+<style scoped></style>
 <script>
-import Spinner from "vue-simple-spinner";
-import { DataTable, ItemsPerPageDropdown, Pagination } from "v-datatable-light";
-import orderBy from "lodash.orderby";
-
-const addZero = value => ("0" + value).slice(-2);
-
-const formatDate = value => {
-    if (value) {
-        const dt = new Date(value);
-        return `${addZero(dt.getDate())}/${addZero(
-            dt.getMonth() + 1
-        )}/${dt.getFullYear()}`;
-    }
-    return "";
-};
-let initialData = null;
+import axios from "axios";
 
 export default {
-    name: "app",
-    components: {
-        DataTable,
-        ItemsPerPageDropdown,
-        Pagination,
-        Spinner
-    },
-    created() {
-        this.axios
-            .get('https://membership.test/api/members')
-            .then(response => {
-                this.loadData(response.data.members);
-            });
-    },
-    data: function() {
+    name: "AllMembers",
+    data() {
         return {
-            headerFields: [
-                {
-                    name: "first_name",
-                    label: "First Name",
-                    sortable: true
-                },
-                {
-                    name: "last_name",
-                    label: "Last Name",
-                    sortable: true
-                },
-                {
-                    name: "primary_address",
-                    label: "Address",
-                    sortable: true,
-                    format: this.getAddress
-                },
-                {
-                    name: "primary_address",
-                    label: "City",
-                    sortable: true,
-                    format: this.getCity
-                },
-                {
-                    name: "primary_address",
-                    label: "State",
-                    sortable: true,
-                    format: this.getState
-                },
-                {
-                    name: "primary_address",
-                    label: "Zip",
-                    sortable: true,
-                    format: this.getZip
-                },
-                {
-                    name: "primary_email",
-                    label: "Email",
-                    sortable: true,
-                    format: this.getEmail
-                },
-                {
-                    name: "current_coven",
-                    label: "Coven",
-                    sortable: true,
-                    format: this.getCovenAbbrev
-                },
-                "__slot:actions"
+            members: [],
+            headers: [
+                {text: "Name", value: "name"},
+                {text: "Address", value: "address"},
+                {text: "City", value: "city"},
+                {text: "State", value: "state"},
+                {text: "Zip", value: "zip"},
+                {text: "Phone", value: "phone"},
+                {text: "Email", value: "email"},
+                {text: "Coven", value: "coven", filter: this.covenFilter()},
+                {text: "Degree", value: "degree"},
             ],
-            data: [],
-            datatableCss: {
-                table: "table table-bordered table-hover table-striped table-center",
-                th: "header-item",
-                thWrapper: "th-wrapper",
-                thWrapperCheckboxes: "th-wrapper checkboxes",
-                arrowsWrapper: "arrows-wrapper",
-                arrowUp: "arrow up",
-                arrowDown: "arrow down",
-                footer: "footer"
-            },
-            paginationCss: {
-                paginationItem: "pagination-item",
-                moveFirstPage: "move-first-page",
-                movePreviousPage: "move-previous-page",
-                moveNextPage: "move-next-page",
-                moveLastPage: "move-last-page",
-                pageBtn: "page-btn"
-            },
-            itemsPerPageCss: {
-                select: "item-per-page-dropdown"
-            },
-            isLoading: false,
-            sort: "asc",
-            sortField: "first_name",
-            listItemsPerPage: [5, 10, 20, 50, 100],
-            itemsPerPage: 10,
-            currentPage: 1,
-            totalItems: 16
         };
     },
+    watch: {
+        options: {
+            handler() {
+                this.readDataFromAPI();
+            },
+        },
+        deep: true,
+    },
     methods: {
-        getAddress: value => {
-            return value[0] ? value[0].address_1 : null;
+        getAddressPart(address, part) {
+            return address[0]? address[0][part] : '';
         },
-
-        getCity: value => {
-            return value[0] ? value[0].city : null;
+        getPhone(phone) {
+            return phone[0] ? phone[0].number : '';
         },
-
-        getState: value => {
-            return value[0] ? value[0].state : null;
+        getEmail(email) {
+            return email[0] ? email[0].email : '';
         },
-
-        getZip: value => {
-            return value[0] ? value[0].zip : null;
+        getCoven(coven) {
+            return coven[0] ? coven[0].abbreviation : '';
         },
-
-        getCovenAbbrev: value => {
-            return value[0] ? value[0].abbreviation : null;
+        getDegree(degree) {
+            return degree[0] ? degree[0].degree : '';
         },
-
-        getEmail: value => {
-            return value[0] ? value[0].email : null;
+        covenFilter() {
+            let header = $('[data-id="coven"]');
+            console.log(header);
         },
+        readDataFromAPI() {
+            axios
+                .get("https://membership.test/api/members")
+                .then((response) => {
+                    this.members = response.data.members ? response.data.members: null;
+                    if (this.members === null) {
+                        return;
+                    }
+                    this.covens = response.data.covens;
+                    // console.log(response.data.degrees);
+                    // console.log(this.members);
+                    this.members.forEach(member => {
+                        this.dataTable.row.add(
+                            [
+                                member.last_name + ', ' + member.first_name,
+                                this.getAddressPart(member.primary_address, 'address_1'),
+                                this.getAddressPart(member.primary_address, 'city'),
+                                this.getAddressPart(member.primary_address, 'state'),
+                                this.getAddressPart(member.primary_address, 'zip'),
+                                this.getPhone(member.primary_phone),
+                                this.getEmail(member.primary_email),
+                                this.getCoven(member.current_coven),
+                                this.getDegree(member.current_degree)
+                            ]
+                        ).draw(false);
+                    });
 
-        dtEditClick: props => alert("Click props:" + JSON.stringify(props)),
-
-        dtUpdateSort: function ({sortField, sort}) {
-            const sortedData = orderBy(initialData, [sortField], [sort]);
-            const start = (this.currentPage - 1) * this.itemsPerPage;
-            const end = this.currentPage * this.itemsPerPage;
-            this.data = sortedData.slice(start, end);
-            console.log("load data based on new sort", this.currentPage);
+                });
         },
-
-        updateItemsPerPage: function (itemsPerPage) {
-            this.itemsPerPage = itemsPerPage;
-            if (itemsPerPage >= initialData.length) {
-                this.data = initialData;
-            } else {
-                this.data = initialData.slice(0, itemsPerPage);
-            }
-            console.log("load data with new items per page number", itemsPerPage);
-        },
-
-        changePage: function (currentPage) {
-            this.currentPage = currentPage;
-            const start = (currentPage - 1) * this.itemsPerPage;
-            const end = currentPage * this.itemsPerPage;
-            this.data = initialData.slice(start, end);
-            console.log("load data for the new page", currentPage);
-        },
-
-        updateCurrentPage: function (currentPage) {
-            this.currentPage = currentPage;
-            console.log("update current page without need to load data", currentPage);
-        },
-
-        loadData: function (data) {
-            this.data = data;
-            initialData = data;
-        }
-    }
+    },
+    mounted() {
+        this.dataTable = $('#members-table').DataTable({});
+        this.readDataFromAPI();
+    },
 };
 </script>
