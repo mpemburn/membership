@@ -15,10 +15,10 @@ use App\Helpers\MigrationHelper;
 |
 */
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
-//
+Route::get('/', function () {
+    return view('welcome');
+});
+
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', function () {
@@ -28,15 +28,19 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/roles', AdminController::class . '@roles')->name('roles');
     Route::get('/permissions', AdminController::class . '@permissions')->name('permissions');
     Route::get('/user_roles', AdminController::class . '@userRoles')->name('user_roles');
+
+    Route::get('/members', function () {
+        return view('members.index');
+    })->name('members.list');
 });
 
 Route::get('test', function () {
     MigrationHelper::run();
 });
 
-// Get Vue routes
-Route::get('{any}', function () {
-    return view('layouts.vue-app');
-})->where('any','.*');
+//// Get Vue routes
+//Route::get('{any}', function () {
+//    return view('layouts.vue-app');
+//})->where('any','.*');
 
 require __DIR__ . '/auth.php';

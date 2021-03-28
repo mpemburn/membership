@@ -1,30 +1,8 @@
-import App from './App.vue';
-import Vue from 'vue/dist/vue';
-import VueRouter from 'vue-router';
-import VueAxios from 'vue-axios';
-import axios from 'axios';
-import {routes} from './routes';
-
-window.Vue = require('vue');
-
-require('./bootstrap');
 require('alpinejs');
 require('datatables.net')
 require('datatables.net-dt')
-
-Vue.use(VueRouter);
-Vue.use(VueAxios, axios);
-
-const router = new VueRouter({
-    mode: 'history',
-    routes: routes
-});
-
-const app = new Vue({
-    el: '#app',
-    router: router,
-    render: h => h(App),
-});
+require('./bootstrap');
+require('./app-vue');
 
 // TODO: Replace with Vue
 import Comparator from "./comparator";
