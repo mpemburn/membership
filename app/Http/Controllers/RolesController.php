@@ -9,6 +9,7 @@ use App\Services\RolesService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role;
 
 class RolesController extends Controller
 {
@@ -25,6 +26,15 @@ class RolesController extends Controller
         $this->crudService = $crudService;
         $this->rolesService = $rolesService;
         $this->permissionsAssociationService = $permissionsAssociationService;
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        $roles = Role::query()
+            ->with('permissions')
+            ->get();
+
+        return response()->json(['success' => true, 'roles' => $roles]);
     }
 
     public function create(Request $request): JsonResponse

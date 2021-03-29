@@ -19,19 +19,29 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/token', function () {
+
+    $token = auth()->user()->createToken('mpemburn@gmail.com'.'-'.now());
+
+    !d($token);
+});
+
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/roles', AdminController::class . '@roles')->name('roles');
+//    Route::get('/roles', AdminController::class . '@roles')->name('roles');
     Route::get('/permissions', AdminController::class . '@permissions')->name('permissions');
     Route::get('/user_roles', AdminController::class . '@userRoles')->name('user_roles');
 
     Route::get('/members', function () {
         return view('members.index');
     })->name('members.list');
+    Route::get('/roles', function () {
+        return view('roles.index-new');
+    })->name('roles');
 });
 
 Route::get('test', function () {

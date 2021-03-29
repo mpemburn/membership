@@ -24,6 +24,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/members', MembersController::class . '@index');
+Route::get('/roles', RolesController::class . '@index');
 
 Route::middleware('auth:api')->group( function () {
     Route::post('/roles/create', RolesController::class . '@create');
