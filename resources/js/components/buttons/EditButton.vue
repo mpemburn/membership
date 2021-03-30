@@ -1,6 +1,6 @@
 <template>
     <button
-        @click="doAction()"
+        @click="sendMessageFromEditButton()"
         v-model="editId"
         class="w-20 ml-3 rounded px-3 py-1 bg-green-300 hover:bg-green-700 hover:text-white focus:shadow-outline focus:outline-none"
     >
@@ -17,8 +17,8 @@ export default {
         },
     },
     methods: {
-        doAction() {
-            alert('Hello! ' + this.editId);
+        sendMessageFromEditButton() {
+            this.$emit('messageFromEditButton', this.editId);
         }
     },
     mounted() {

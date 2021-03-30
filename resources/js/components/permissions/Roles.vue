@@ -7,27 +7,42 @@
             </tr>
             </thead>
             <tbody>
-                <tr v-for="role in roles">
-                    <td>{{ role.name }}</td>
-                    <td>
-                        <ul v-for="permission in role.permissions">
-                            <li>{{ permission.name }}</li>
-                        </ul>
-                    </td>
-                    <td><component :is="editButton" v-bind="{ editId: role.id }">Edit</component></td>
-                    <td><component :is="deleteButton" v-bind="{ deleteId: role.id }">Delete</component></td>
-                </tr>
+            <tr v-for="role in roles">
+                <td>{{ role.name }}</td>
+                <td>
+                    <ul v-for="permission in role.permissions">
+                        <li>{{ permission.name }}</li>
+                    </ul>
+                </td>
+                <td>
+                    <component :is="editButton" v-bind="{ editId: role.id }"
+                               @messageFromEditButton="editButtonMessageRecieved">Edit
+                    </component>
+                </td>
+                <td>
+                    <component :is="deleteButton" v-bind="{ deleteId: role.id }">Delete</component>
+                </td>
+            </tr>
             </tbody>
         </table>
         <section>
             <component v-if="showModal" :is="modal" v-bind="{ title: 'Roles', width: 'full' }">
                 <p class="text-gray-800">
                     Role and its Permissions go here.
+                <div v-for="permission in permissions">
+                    <input type="checkbox" :value="permission.id"> {{ permission.name}}
+                </div>
                 </p>
 
                 <div class="text-right mt-4">
-                    <button @click="showModal = false" class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">Cancel</button>
-                    <button class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">Update</button>
+                    <button @click="showModal = false"
+                            class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
+                        Cancel
+                    </button>
+                    <button
+                        class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">
+                        Update
+                    </button>
                 </div>
             </component>
         </section>
@@ -46,7 +61,9 @@ export default {
     data() {
         return {
             showModal: false,
+            roleId: null,
             roles: [],
+            permissions: [],
             headers: [
                 {text: "Role Name", class: "5/12"},
                 {text: "Permissions", class: "5/12"},
@@ -63,7 +80,7 @@ export default {
             axios
                 .get("https://membership.test/api/roles")
                 .then((response) => {
-                    if (response.data.roles  === null) {
+                    if (response.data.roles === null) {
                         return;
                     }
                     response.data.roles.forEach(role => {
@@ -75,6 +92,15 @@ export default {
                     });
                 });
         },
+        editButtonMessageRecieved(roleId) {
+            this.permissions = [];
+            this.roleId = roleId;
+            this.permissions.push({ id: 1, name: 'Cool!' });
+            this.showModal = true;
+        },
+        populate() {
+            return "All the things for " + this.roleId;
+        }
     },
     components: {
         EditButton,
