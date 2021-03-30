@@ -19,18 +19,33 @@
                 </tr>
             </tbody>
         </table>
+        <section>
+            <component v-if="showModal" :is="modal" v-bind="{ title: 'Roles', width: 'full' }">
+                <p class="text-gray-800">
+                    Role and its Permissions go here.
+                </p>
+
+                <div class="text-right mt-4">
+                    <button @click="showModal = false" class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">Cancel</button>
+                    <button class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">Update</button>
+                </div>
+            </component>
+        </section>
     </div>
 </template>
+
 <style scoped></style>
 <script>
 import axios from "axios";
 import EditButton from '../buttons/EditButton.vue';
 import DeleteButton from '../buttons/DeleteButton.vue';
+import Modal from '../Modal.vue';
 
 export default {
     name: "Roles",
     data() {
         return {
+            showModal: false,
             roles: [],
             headers: [
                 {text: "Role Name", class: "5/12"},
@@ -39,7 +54,8 @@ export default {
                 {text: "", class: "w-1/12"},
             ],
             editButton: 'EditButton',
-            deleteButton: 'DeleteButton'
+            deleteButton: 'DeleteButton',
+            modal: 'Modal',
         };
     },
     methods: {
@@ -63,9 +79,12 @@ export default {
     components: {
         EditButton,
         DeleteButton,
+        Modal
     },
     updated() {
-        this.dataTable = $('#roles-table').DataTable({});
+        if (this.dataTable === 'undefined') {
+            this.dataTable = $('#roles-table').DataTable({});
+        }
     },
     mounted() {
         this.readDataFromAPI();
