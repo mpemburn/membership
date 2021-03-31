@@ -9,6 +9,7 @@ use App\Services\RolesService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RolesController extends Controller
@@ -35,6 +36,18 @@ class RolesController extends Controller
             ->get();
 
         return response()->json(['success' => true, 'roles' => $roles]);
+    }
+
+    public function getPermissionsForRole(Request $request): JsonResponse
+    {
+        $role = Role::find(1)
+            ->with('permissions')
+            ->get();
+
+        $rolePermissions = $role->first()->permissions();
+        $allPermissions = Permission::all();
+
+        return response()->json(['success' => true, 'permissions' => $allPermissions]);
     }
 
     public function create(Request $request): JsonResponse

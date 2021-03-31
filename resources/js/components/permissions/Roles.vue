@@ -93,10 +93,15 @@ export default {
                 });
         },
         editButtonMessageRecieved(roleId) {
-            this.permissions = [];
-            this.roleId = roleId;
-            this.permissions.push({ id: 1, name: 'Cool!' });
-            this.showModal = true;
+            axios
+                .get('https://membership.test/api/roles/permissions?id=' + roleId)
+                .then((response) => {
+                    if (response.data.permissions === null) {
+                        return;
+                    }
+                    this.permissions = response.data.permissions;
+                    this.showModal = true;
+                });
         },
         populate() {
             return "All the things for " + this.roleId;
