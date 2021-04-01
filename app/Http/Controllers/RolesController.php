@@ -44,10 +44,16 @@ class RolesController extends Controller
             ->with('permissions')
             ->get();
 
-        $rolePermissions = $role->first()->permissions();
         $allPermissions = Permission::all();
+        $rolePermissions = $role->first()->permissions;
 
-        return response()->json(['success' => true, 'permissions' => $allPermissions]);
+        return response()->json([
+            'success' => true,
+            'role' => $role->first(),
+            'role_permissions' => $rolePermissions,
+            'all_permissions' => $allPermissions,
+            'diff' => $allPermissions->diff($rolePermissions),
+        ]);
     }
 
     public function create(Request $request): JsonResponse

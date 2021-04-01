@@ -27,12 +27,26 @@
         </table>
         <section>
             <component v-if="showModal" :is="modal" v-bind="{ title: 'Roles', width: 'full' }">
-                <p class="text-gray-800">
-                    Role and its Permissions go here.
-                <div v-for="permission in permissions">
-                    <input type="checkbox" :value="permission.id"> {{ permission.name}}
+                <div class="form-group font-bold">
+                    <div>Role Name:</div>
+                    <input type="text" name="role_name" :value="roleName"/>
+                    <div id="name_protected" class="w-2/3 text-gray-600 font-normal hidden">
+                        <b>NOTICE:</b> This <b>Role Name</b> is flagged as protected and cannot be changed.
+                    </div>
+                    <div id="name_caution" class="w-2/3 text-red-600 font-normal hidden">
+                        <b>CAUTION:</b> Changing the <b>Role Name</b> may affect existing permissions.
+                    </div>
                 </div>
-                </p>
+                <div class="form-group font-bold" id="permissions_for_role">
+                    Permissions:
+                    <div class="border-solid border-gray-300 border-2 overflow-scroll">
+                        <ul id="role_permissions" class="p-4">
+                            <div v-for="permission in permissions">
+                                <input type="checkbox" :checked="permission.checked" :value="permission.id"> {{ permission.name}}
+                            </div>
+                        </ul>
+                    </div>
+                </div>
 
                 <div class="text-right mt-4">
                     <button @click="showModal = false"
@@ -62,6 +76,7 @@ export default {
         return {
             showModal: false,
             roleId: null,
+            roleName: null,
             roles: [],
             permissions: [],
             headers: [
@@ -93,18 +108,27 @@ export default {
                 });
         },
         editButtonMessageRecieved(roleId) {
+            this.permissions = [];
             axios
                 .get('https://membership.test/api/roles/permissions?id=' + roleId)
                 .then((response) => {
-                    if (response.data.permissions === null) {
-                        return;
-                    }
-                    this.permissions = response.data.permissions;
+                    let role = response.data.role;
+
+                    this.roleName = role.name;
+                    this.hydrate(response.data.role.permissions, true);
+                    this.hydrate(response.data.diff, false);
                     this.showModal = true;
                 });
         },
-        populate() {
-            return "All the things for " + this.roleId;
+        hydrate(permissions, shouldCheck) {
+            permissions.forEach(permission => {
+                let checkbox = {
+                    id: permission.id,
+                    name: permission.name,
+                    checked: shouldCheck
+                }
+                this.permissions.push(checkbox);
+            });
         }
     },
     components: {
