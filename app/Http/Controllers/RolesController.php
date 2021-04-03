@@ -40,7 +40,7 @@ class RolesController extends Controller
 
     public function getPermissionsForRole(Request $request): JsonResponse
     {
-        $role = Role::find(1)
+        $role = Role::where('id', '=', $request->get('id'))
             ->with('permissions')
             ->get();
 
