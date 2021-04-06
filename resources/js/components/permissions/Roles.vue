@@ -45,7 +45,12 @@
                             <div class="border-solid border-gray-300 border-2 overflow-scroll">
                                 <ul id="role_permissions" class="p-4">
                                     <div v-for="permission in permissions">
-                                        <input type="checkbox" :checked="permission.checked" :value="permission.id">
+                                        <input
+                                            type="checkbox"
+                                            name="role_permissions"
+                                            v-model="permission.checked"
+                                            :value="permission.id"
+                                        >
                                         {{ permission.name }}
                                     </div>
                                 </ul>
@@ -150,13 +155,12 @@ export default {
 
         },
         updateRole() {
-            console.log(this.permissions);
             axios.put('https://membership.test/api/roles/update', {
                 id: this.roleId,
                 name: this.roleName,
-                permissions: this.permissions
+                role_permission: this.permissions
             }).then(response => {
-
+                this.showModal = false;
             });
         }
     },

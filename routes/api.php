@@ -26,10 +26,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('/members', MembersController::class . '@index');
 Route::get('/roles', RolesController::class . '@index');
 Route::get('/roles/permissions', RolesController::class . '@getPermissionsForRole');
+Route::put('/roles/update', RolesController::class . '@update');
 
 Route::middleware('auth:api')->group( function () {
     Route::post('/roles/create', RolesController::class . '@create');
-    Route::put('/roles/update', RolesController::class . '@update');
+//    Route::put('/roles/update', RolesController::class . '@update');
     Route::delete('/roles/delete', RolesController::class . '@delete');
 //    Route::get('/roles/permissions', RolesController::class . '@getPermissions');
 
