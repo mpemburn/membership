@@ -6,6 +6,7 @@ use App\Models\RoleUi;
 use App\Services\PermissionsAssociationService;
 use App\Services\PermissionsCrudService;
 use App\Services\RolesService;
+use App\Services\ValidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -15,18 +16,18 @@ use Spatie\Permission\Models\Role;
 class RolesController extends Controller
 {
     protected PermissionsCrudService $crudService;
-    protected PermissionsAssociationService $permissionsAssociationService;
     protected RolesService $rolesService;
+    protected ValidationService $validator;
 
     public function __construct(
         PermissionsCrudService $crudService,
-        PermissionsAssociationService $permissionsAssociationService,
-        RolesService $rolesService
+        RolesService $rolesService,
+        ValidationService $validationService
     )
     {
         $this->crudService = $crudService;
         $this->rolesService = $rolesService;
-        $this->permissionsAssociationService = $permissionsAssociationService;
+        $this->validator = $validationService;
     }
 
     public function index(Request $request): JsonResponse
@@ -69,13 +70,21 @@ class RolesController extends Controller
 
     public function update(Request $request): JsonResponse
     {
-        $response = $this->crudService->update($request, new RoleUi());
+        if ($this->validator->handle($request, [
+            'id' => ['required'],
+            'name' => ['required'],
+            'role_permission' => ['required']
+        ])) {
+            $response = $this->crudService->update($request, new RoleUi());
 
-        if ($request->has('role_permission')) {
-            return $this->processPermissions($request, $response);
+            if ($request->has('role_permission')) {
+                return $this->processPermissions($request, $response);
+            }
+
+            return $response;
         }
 
-        return $response;
+        return response()->json(['error' => $this->validator->getMessage()], 400);
     }
 
     public function delete(Request $request): JsonResponse
@@ -97,6 +106,6 @@ class RolesController extends Controller
         $roleId = $response->getData()->id;
         $role = RoleUi::find($roleId);
 
-        return $this->permissionsAssociationService->process($role, $request);
+        return $this->rolesService->addOrRevokePermissions($role, $request);
     }
 }

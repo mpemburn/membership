@@ -19,14 +19,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/token', function () {
-
-    $token = auth()->user()->createToken('mpemburn@gmail.com'.'-'.now());
-
-    !d($token);
-});
-
-
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', function () {
         return view('dashboard');

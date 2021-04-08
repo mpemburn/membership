@@ -11,6 +11,13 @@ class RolesService
 {
     public const NO_ROLE_NAME_PROVIDED = 'No role name provided.';
 
+    protected ValidationService $validator;
+
+    public function __construct(ValidationService $validationService)
+    {
+        $this->validator = $validationService;
+    }
+
     public function getPermissionsForRole(Request $request): JsonResponse
     {
         $permissions = [];
@@ -26,4 +33,31 @@ class RolesService
 
         return response()->json(['success' => true, 'permissions' => $permissions]);
     }
+
+    public function addOrRevokePermissions(Role $role, Request $request): JsonResponse
+    {
+        $fromEditor = collect($request->get('role_permission'));
+
+        $grantedPermissions = collect();
+
+        if ($fromEditor->isNotEmpty()) {
+            $grantedPermissions = $fromEditor->map(static function ($permission) use ($role) {
+                if ($permission['checked']) {
+                    $role->givePermissionTo($permission['name']);
+
+                    return ['name' => $permission['name']];
+                }
+                $role->revokePermissionTo($permission['name']);
+
+                return null;
+            })->filter();
+        }
+
+        return response()->json([
+            'success' => true,
+            'roleId' => $role->id,
+            'permissions' => $grantedPermissions->toArray()
+        ]);
+    }
+
 }

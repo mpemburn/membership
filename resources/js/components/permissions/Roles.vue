@@ -44,7 +44,7 @@
                             Permissions:
                             <div class="border-solid border-gray-300 border-2 overflow-scroll">
                                 <ul id="role_permissions" class="p-4">
-                                    <div v-for="permission in permissions">
+                                    <li v-for="permission in permissions">
                                         <input
                                             type="checkbox"
                                             name="role_permissions"
@@ -52,7 +52,7 @@
                                             :value="permission.id"
                                         >
                                         {{ permission.name }}
-                                    </div>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -124,14 +124,17 @@ export default {
             this.permissions = [];
             axios.get('https://membership.test/api/roles/permissions?id=' + roleId)
                 .then(response => {
-                    let role = response.data.role;
-
-                    this.roleId = role.id;
-                    this.roleName = role.name;
-                    this.hydrate(response.data.role.permissions, true);
-                    this.hydrate(response.data.diff, false);
+                    this.populateEditorCheckboxes(response);
                     this.showModal = true;
                 });
+        },
+        populateEditorCheckboxes(response) {
+            let role = response.data.role;
+
+            this.roleId = role.id;
+            this.roleName = role.name;
+            this.hydrate(response.data.role.permissions, true);
+            this.hydrate(response.data.diff, false);
         },
         hydrate(permissions, shouldCheck) {
             permissions.forEach(permission => {
@@ -160,7 +163,15 @@ export default {
                 name: this.roleName,
                 role_permission: this.permissions
             }).then(response => {
-                this.showModal = false;
+                if (response.data.success) {
+                    this.roles.forEach(role => {
+                        if (role.id === response.data.roleId) {
+                            role.permissions = response.data.permissions
+                        }
+                    });
+
+                    this.showModal = false;
+                }
             });
         }
     },
