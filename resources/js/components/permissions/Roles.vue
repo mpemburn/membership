@@ -37,7 +37,7 @@
                         <input type="hidden" name="role_id" :value="roleId"/>
                         <div class="form-group font-bold">
                             <div>Role Name:</div>
-                            <input type="text" name="role_name" :value="roleName"/>
+                            <input type="text" name="role_name" v-model="roleName"/>
                             <div id="name_protected" class="w-2/3 text-gray-600 font-normal hidden">
                                 <b>NOTICE:</b> This <b>Role Name</b> is flagged as protected and cannot be changed.
                             </div>
@@ -179,12 +179,20 @@ export default {
 
         },
         createRole() {
+            axios.post('https://membership.test/api/roles/create', {
+                name: this.roleName,
+                role_permissions: this.permissions
+            }).then(response => {
+                this.showModal = false;
+                // TODO: Figure out how to reload and refresh DataTables
+                document.location.reload();
+            });
         },
         updateRole() {
             axios.put('https://membership.test/api/roles/update', {
                 id: this.roleId,
                 name: this.roleName,
-                role_permission: this.permissions
+                role_permissions: this.permissions
             }).then(response => {
                 if (response.data.success) {
                     this.roles.forEach(role => {
@@ -204,7 +212,7 @@ export default {
         Modal
     },
     updated() {
-        if (this.dataTable === 'undefined') {
+        if (this.dataTable === undefined) {
             this.dataTable = $('#roles-table').DataTable({});
         }
     },

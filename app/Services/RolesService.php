@@ -36,7 +36,7 @@ class RolesService
 
     public function addOrRevokePermissions(Role $role, Request $request): JsonResponse
     {
-        $fromEditor = collect($request->get('role_permission'));
+        $fromEditor = collect($request->get('role_permissions'));
 
         $grantedPermissions = collect();
 

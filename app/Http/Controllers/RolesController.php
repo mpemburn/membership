@@ -59,9 +59,10 @@ class RolesController extends Controller
 
     public function create(Request $request): JsonResponse
     {
+        Log::debug($request->get('name'));
         $response = $this->crudService->create($request, new RoleUi());
 
-        if ($request->has('role_permission')) {
+        if ($request->has('role_permissions')) {
             return $this->processPermissions($request, $response);
         }
 
@@ -73,11 +74,11 @@ class RolesController extends Controller
         if ($this->validator->handle($request, [
             'id' => ['required'],
             'name' => ['required'],
-            'role_permission' => ['required']
+            'role_permissions' => ['required']
         ])) {
             $response = $this->crudService->update($request, new RoleUi());
 
-            if ($request->has('role_permission')) {
+            if ($request->has('role_permissions')) {
                 return $this->processPermissions($request, $response);
             }
 
