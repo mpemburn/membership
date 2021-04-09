@@ -132,10 +132,10 @@ export default {
         addRoleDialog() {
             axios.get('https://membership.test/api/permissions')
                 .then(response => {
-                    this.modalContext = 'Add';
                     this.roleName = null;
                     this.permissions = [];
                     this.hydrate(response.data.permissions, false);
+                    this.modalContext = 'Add';
                     this.modalTitle = 'Add New Role';
                     this.showModal = true;
                 });
