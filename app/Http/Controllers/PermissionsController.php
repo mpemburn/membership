@@ -17,6 +17,13 @@ class PermissionsController extends Controller
         $this->crudService = $permissionsService;
     }
 
+    public function index(Request $request): JsonResponse
+    {
+        $permissions = Permission::all();
+
+        return response()->json(['success' => true, 'permissions' => $permissions]);
+    }
+
     public function create(Request $request): JsonResponse
     {
         return $this->crudService->create($request, new PermissionUi());

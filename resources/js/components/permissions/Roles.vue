@@ -1,5 +1,10 @@
 <template>
     <div class="">
+        <button @click="addRoleDialog"
+                class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">
+            Add Role
+        </button>
+
         <table id="roles-table" class="stripe">
             <thead>
             <tr>
@@ -26,7 +31,7 @@
             </tbody>
         </table>
         <section>
-            <component v-if="showModal" :is="modal" v-bind="{ title: 'Roles', width: 'full' }">
+            <component v-if="showModal" :is="modal" v-bind="{ title: modalTitle, width: 'full' }" @closeModal="showModal = false">
                 <form v-on:submit="submitForm">
                     <div class="grid grid-cols-1 md:grid-cols-2">
                         <input type="hidden" name="role_id" :value="roleId"/>
@@ -64,7 +69,11 @@
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
                     </button>
-                    <button @click="updateRole"
+                    <button v-if="modalContext === 'Add'" @click="createRole"
+                            class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">
+                        Submit
+                    </button>
+                    <button v-if="modalContext === 'Edit'" @click="updateRole"
                             class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">
                         Update
                     </button>
@@ -86,6 +95,8 @@ export default {
     data() {
         return {
             showModal: false,
+            modalContext: null,
+            modalTitle: null,
             roleId: null,
             roleName: null,
             roles: [],
@@ -102,7 +113,7 @@ export default {
         };
     },
     methods: {
-        readDataFromAPI() {
+        readRolesFromAPI() {
             axios
                 .get("https://membership.test/api/roles")
                 .then((response) => {
@@ -118,6 +129,17 @@ export default {
                     });
                 });
         },
+        addRoleDialog() {
+            axios.get('https://membership.test/api/permissions')
+                .then(response => {
+                    this.modalContext = 'Add';
+                    this.roleName = null;
+                    this.permissions = [];
+                    this.hydrate(response.data.permissions, false);
+                    this.modalTitle = 'Add New Role';
+                    this.showModal = true;
+                });
+        },
         editButtonMessageRecieved(roleId) {
             this.roleId = roleId;
             this.roleName = null;
@@ -125,6 +147,8 @@ export default {
             axios.get('https://membership.test/api/roles/permissions?id=' + roleId)
                 .then(response => {
                     this.populateEditorCheckboxes(response);
+                    this.modalContext = 'Edit';
+                    this.modalTitle = 'Edit Role';
                     this.showModal = true;
                 });
         },
@@ -155,7 +179,6 @@ export default {
 
         },
         createRole() {
-
         },
         updateRole() {
             axios.put('https://membership.test/api/roles/update', {
@@ -186,7 +209,7 @@ export default {
         }
     },
     mounted() {
-        this.readDataFromAPI();
+        this.readRolesFromAPI();
     },
 };
 

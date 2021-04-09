@@ -28,11 +28,14 @@ Route::get('/roles', RolesController::class . '@index');
 Route::get('/roles/permissions', RolesController::class . '@getPermissionsForRole');
 Route::put('/roles/update', RolesController::class . '@update');
 
+Route::get('/permissions', PermissionsController::class . '@index');
+
 Route::middleware('auth:api')->group( function () {
     Route::post('/roles/create', RolesController::class . '@create');
 //    Route::put('/roles/update', RolesController::class . '@update');
     Route::delete('/roles/delete', RolesController::class . '@delete');
 //    Route::get('/roles/permissions', RolesController::class . '@getPermissions');
+//    Route::get('/roles/permissions', RolesController::class . '@getPermissionsForRole');
 
     Route::post('/permissions/create', PermissionsController::class . '@create');
     Route::put('/permissions/update', PermissionsController::class . '@update');

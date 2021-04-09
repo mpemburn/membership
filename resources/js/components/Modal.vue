@@ -4,8 +4,8 @@
 
         <div class="absolute max-h-full" :class="maxWidth">
             <div class="container bg-white overflow-hidden md:rounded">
-                <div class="px-4 py-4 leading-none flex justify-between items-center font-medium text-sm bg-gray-100 border-b select-none">
-                    <h3>{{ title }}</h3>
+                <div class="leading-none flex justify-between items-center font-medium text-sm border-b select-none">
+                    <h1><strong>{{ title }}</strong></h1>
                     <div @click="close" class="text-2xl hover:text-gray-600 cursor-pointer">
                         &#215;
                     </div>
@@ -45,7 +45,7 @@ export default {
     methods: {
         close() {
             this.open = false;
-            this.$emit("close");
+            this.$emit("closeModal");
         },
     },
     computed: {
