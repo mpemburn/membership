@@ -1,3 +1,4 @@
+<!--From https://vuetailwind.com -->
 <template>
     <div class="fixed w-full h-full top-0 left-0 flex items-center justify-center z-10" v-if="open">
         <div class="absolute w-full h-full bg-gray-900 opacity-50" @click="close"></div>

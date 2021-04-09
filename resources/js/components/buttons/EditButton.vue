@@ -20,9 +20,6 @@ export default {
         sendMessageFromEditButton() {
             this.$emit('messageFromEditButton', this.editId);
         }
-    },
-    mounted() {
-    },
-
+    }
 }
 </script>

@@ -25,7 +25,8 @@
                     </component>
                 </td>
                 <td>
-                    <component :is="deleteButton" v-bind="{ deleteId: role.id }">Delete</component>
+                    <component :is="deleteButton" v-bind="{ deleteId: role.id }"
+                                @messageFromDeleteButton="deleteButtonMessageRecieved">Delete</component>
                 </td>
             </tr>
             </tbody>
@@ -80,6 +81,23 @@
                 </div>
             </component>
         </section>
+        <section>
+            <component v-if="showConfirm" :is="modal" v-bind="{ title: 'Delete', width: 'full' }" @closeModal="showConfirm = false">
+                <div>
+                    {{ confirmMessage }}
+                </div>
+                <div class="text-center mt-4">
+                    <button @click="showConfirm = false"
+                            class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
+                        Cancel
+                    </button>
+                    <button @click="deleteRole"
+                            class="rounded px-3 py-1 bg-red-700 hover:bg-red-500 text-white focus:shadow-outline focus:outline-none">
+                        Okay
+                    </button>
+                </div>
+            </component>
+        </section>
     </div>
 </template>
 
@@ -95,9 +113,12 @@ export default {
     data() {
         return {
             showModal: false,
+            showConfirm: false,
             modalContext: null,
             modalTitle: null,
+            confirmMessage: null,
             roleId: null,
+            currentRoleId: null,
             roleName: null,
             roles: [],
             permissions: [],
@@ -152,6 +173,14 @@ export default {
                     this.showModal = true;
                 });
         },
+        deleteButtonMessageRecieved(roleId) {
+            let role = this.getRoleById(roleId);
+            if (role !== null) {
+                this.confirmMessage = 'Do you really want to delete "' + role.name + '"?';
+                this.currentRoleId = roleId;
+                this.showConfirm = true;
+            }
+        },
         populateEditorCheckboxes(response) {
             let role = response.data.role;
 
@@ -185,6 +214,7 @@ export default {
             }).then(response => {
                 this.showModal = false;
                 // TODO: Figure out how to reload and refresh DataTables
+                // https://stackoverflow.com/questions/51436441/how-to-refresh-datatables-with-new-data-in-vuejs
                 document.location.reload();
             });
         },
@@ -197,13 +227,31 @@ export default {
                 if (response.data.success) {
                     this.roles.forEach(role => {
                         if (role.id === response.data.roleId) {
-                            role.permissions = response.data.permissions
+                            role.permissions = response.data.permissions;
                         }
                     });
 
                     this.showModal = false;
                 }
             });
+        },
+        deleteRole() {
+            axios.delete('https://membership.test/api/roles/delete?id=' + this.currentRoleId)
+                .then(response => {
+                    this.showConfirm = false;
+                    document.location.reload();
+                });
+        },
+        getRoleById(roleId) {
+            let found = null;
+
+            this.roles.forEach(role => {
+                if (role.id === roleId) {
+                    found = role;
+                }
+            });
+
+            return found;
         }
     },
     components: {
