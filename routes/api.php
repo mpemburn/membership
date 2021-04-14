@@ -23,20 +23,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/members', MembersController::class . '@index');
-Route::get('/roles', RolesController::class . '@index');
-Route::get('/roles/permissions', RolesController::class . '@getPermissionsForRole');
-Route::post('/roles/create', RolesController::class . '@create');
-Route::put('/roles/update', RolesController::class . '@update');
-
-Route::get('/permissions', PermissionsController::class . '@index');
-
 Route::middleware('auth:api')->group( function () {
-//    Route::post('/roles/create', RolesController::class . '@create');
-//    Route::put('/roles/update', RolesController::class . '@update');
+    Route::get('/roles', RolesController::class . '@index');
+    Route::get('/roles/permissions', RolesController::class . '@getPermissionsForRole');
+    Route::post('/roles/create', RolesController::class . '@create');
+    Route::put('/roles/update', RolesController::class . '@update');
     Route::delete('/roles/delete', RolesController::class . '@delete');
-//    Route::get('/roles/permissions', RolesController::class . '@getPermissions');
-//    Route::get('/roles/permissions', RolesController::class . '@getPermissionsForRole');
 
     Route::post('/permissions/create', PermissionsController::class . '@create');
     Route::put('/permissions/update', PermissionsController::class . '@update');
@@ -45,6 +37,7 @@ Route::middleware('auth:api')->group( function () {
     Route::post('/user_roles', UserRolesController::class . '@edit');
     Route::get('/user_roles/assigned', UserRolesController::class . '@getAssigned');
 
+    Route::get('/members', MembersController::class . '@index');
     Route::post('/member', MembersController::class . '@store');
     Route::post('/member_email', MembersController::class . '@addEmailToMember');
     Route::post('/member_coven', MembersController::class . '@addMemberToCoven');
