@@ -28,7 +28,7 @@ class AdminController extends Controller
 
     public function roles()
     {
-        return view('roles.index-new')
+        return view('roles.index')
             ->with('action', '/api/roles/')
             ->with('roles', $this->crudService->getAllRoles())
             ->with('protectedRoles', $this->crudService->getProtectedRoles())

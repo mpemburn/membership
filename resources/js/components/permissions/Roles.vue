@@ -1,7 +1,7 @@
 <template>
     <div class="">
         <button @click="addRoleDialog"
-                class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">
+                class="rounded px-3 py-1 m-2 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">
             Add Role
         </button>
 

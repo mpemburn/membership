@@ -24,6 +24,13 @@ class PermissionsController extends Controller
         return response()->json(['success' => true, 'permissions' => $permissions]);
     }
 
+    public function show(Request $request, int $permissionId): JsonResponse
+    {
+        $permission = Permission::findById($permissionId, 'web');
+
+        return response()->json(['success' => true, 'permission' => $permission]);
+    }
+
     public function create(Request $request): JsonResponse
     {
         return $this->crudService->create($request, new PermissionUi());
