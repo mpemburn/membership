@@ -30,6 +30,7 @@ Route::middleware('auth:api')->group( function () {
     Route::put('/roles/update', RolesController::class . '@update');
     Route::delete('/roles/delete', RolesController::class . '@delete');
 
+    Route::get('/permissions', PermissionsController::class . '@index');
     Route::post('/permissions/create', PermissionsController::class . '@create');
     Route::put('/permissions/update', PermissionsController::class . '@update');
     Route::delete('/permissions/delete', PermissionsController::class . '@delete');

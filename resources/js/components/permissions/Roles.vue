@@ -26,13 +26,15 @@
                 </td>
                 <td>
                     <component :is="deleteButton" v-bind="{ deleteId: role.id }"
-                                @messageFromDeleteButton="deleteButtonMessageRecieved">Delete</component>
+                               @messageFromDeleteButton="deleteButtonMessageRecieved">Delete
+                    </component>
                 </td>
             </tr>
             </tbody>
         </table>
         <section>
-            <component v-if="showModal" :is="modal" v-bind="{ title: modalTitle, width: 'full' }" @closeModal="showModal = false">
+            <component v-if="showModal" :is="modal" v-bind="{ title: modalTitle, width: 'full' }"
+                       @closeModal="showModal = false">
                 <form v-on:submit="submitForm">
                     <div class="grid grid-cols-1 md:grid-cols-2">
                         <input type="hidden" name="role_id" :value="roleId"/>
@@ -82,7 +84,8 @@
             </component>
         </section>
         <section>
-            <component v-if="showConfirm" :is="modal" v-bind="{ title: 'Delete', width: 'full' }" @closeModal="showConfirm = false">
+            <component v-if="showConfirm" :is="modal" v-bind="{ title: 'Delete', width: 'full' }"
+                       @closeModal="showConfirm = false">
                 <div>
                     {{ confirmMessage }}
                 </div>
@@ -112,6 +115,7 @@ export default {
     name: "Roles",
     data() {
         return {
+            dataTables: null,
             showModal: false,
             showConfirm: false,
             modalContext: null,
@@ -133,10 +137,16 @@ export default {
             modal: 'Modal',
         };
     },
+    watch: {
+        roles(val) {
+            this.refreshTable();
+        }
+    },
     methods: {
         readRolesFromAPI() {
+            this.roles = [];
             axios
-                .get("https://membership.test/api/roles")
+                .get("/api/roles")
                 .then((response) => {
                     if (response.data.roles === null) {
                         return;
@@ -151,7 +161,7 @@ export default {
                 });
         },
         addRoleDialog() {
-            axios.get('https://membership.test/api/permissions')
+            axios.get('/api/permissions')
                 .then(response => {
                     this.roleName = null;
                     this.permissions = [];
@@ -165,7 +175,7 @@ export default {
             this.roleId = roleId;
             this.roleName = null;
             this.permissions = [];
-            axios.get('https://membership.test/api/roles/permissions?id=' + roleId)
+            axios.get('/api/roles/permissions?id=' + roleId)
                 .then(response => {
                     this.populateEditorCheckboxes(response);
                     this.modalContext = 'Edit';
@@ -208,18 +218,16 @@ export default {
 
         },
         createRole() {
-            axios.post('https://membership.test/api/roles/create', {
+            axios.post('/api/roles/create', {
                 name: this.roleName,
                 role_permissions: this.permissions
             }).then(response => {
                 this.showModal = false;
-                // TODO: Figure out how to reload and refresh DataTables
-                // https://stackoverflow.com/questions/51436441/how-to-refresh-datatables-with-new-data-in-vuejs
-                document.location.reload();
+                this.readRolesFromAPI();
             });
         },
         updateRole() {
-            axios.put('https://membership.test/api/roles/update', {
+            axios.put('/api/roles/update', {
                 id: this.roleId,
                 name: this.roleName,
                 role_permissions: this.permissions
@@ -230,16 +238,15 @@ export default {
                             role.permissions = response.data.permissions;
                         }
                     });
-
                     this.showModal = false;
                 }
             });
         },
         deleteRole() {
-            axios.delete('https://membership.test/api/roles/delete?id=' + this.currentRoleId)
+            axios.delete('/api/roles/delete?id=' + this.currentRoleId)
                 .then(response => {
                     this.showConfirm = false;
-                    document.location.reload();
+                    this.readRolesFromAPI();
                 });
         },
         getRoleById(roleId) {
@@ -252,6 +259,15 @@ export default {
             });
 
             return found;
+        },
+        initDataTable() {
+            this.dataTable = $('#roles-table').DataTable({});
+        },
+        refreshTable() {
+            this.dataTable.destroy();
+            this.$nextTick(() => {
+                this.initDataTable();
+            })
         }
     },
     components: {
@@ -261,7 +277,7 @@ export default {
     },
     updated() {
         if (this.dataTable === undefined) {
-            this.dataTable = $('#roles-table').DataTable({});
+            this.initDataTable();
         }
     },
     mounted() {
