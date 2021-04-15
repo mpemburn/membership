@@ -24,6 +24,7 @@ Vue.component('v-modal', require('./components/buttons/DeleteButton.vue').defaul
 Vue.component('members-all', require('./components/members/AllMembers.vue').default);
 Vue.component('roles-all', require('./components/permissions/Roles.vue').default);
 Vue.component('permissions-all', require('./components/permissions/Permissions.vue').default);
+Vue.component('user-roles-all', require('./components/permissions/UserRoles.vue').default);
 
 const app = new Vue({
     el: '#app',

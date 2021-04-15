@@ -21,7 +21,6 @@ class PermissionsController extends Controller
     {
         $permissions = Permission::all();
 
-        return response()->json(['success' => true, 'permissions' => $permissions]);
     }
 
     public function show(Request $request, int $permissionId): JsonResponse

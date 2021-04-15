@@ -18,6 +18,25 @@ class UserRolesController extends Controller
         $this->userRolesService = $userRolesService;
     }
 
+    public function index()
+    {
+        $users = User::with('roles')
+            ->with('permissions')
+            ->get();
+
+        return response()->json(['success' => true, 'users' => $users]);
+    }
+
+    public function show(Request $request, int $userId)
+    {
+        $user = User::where('id', '=', $userId)
+            ->with('roles')
+            ->with('permissions')
+            ->first();
+
+        return response()->json(['success' => true, 'user' => $user]);
+    }
+
     public function edit(Request $request)
     {
         return $this->userRolesService->edit($request);

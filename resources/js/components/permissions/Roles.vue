@@ -264,10 +264,12 @@ export default {
             this.dataTable = $('#roles-table').DataTable({});
         },
         refreshTable() {
-            this.dataTable.destroy();
-            this.$nextTick(() => {
-                this.initDataTable();
-            })
+            if (this.dataTable !== undefined) {
+                this.dataTable.destroy();
+                this.$nextTick(() => {
+                    this.initDataTable();
+                })
+            }
         }
     },
     components: {
