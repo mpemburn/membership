@@ -188,18 +188,14 @@ export default {
             this.updateRole()
         },
         saveUser() {
-            axios.put('/api/user_roles/update', {
+            axios.post('/api/user_roles', {
                 id: this.userId,
                 roles: this.user.roles,
                 permissions: this.user.permissions
             }).then(response => {
                 if (response.data.success) {
-                    this.users.forEach(user => {
-                        if (user.id === response.data.userId) {
-                            user.permissions = response.data.permissions;
-                        }
-                    });
                     this.showModal = false;
+                    this.readUsersFromAPI();
                 }
             });
         },

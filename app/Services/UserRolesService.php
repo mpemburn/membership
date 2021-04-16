@@ -24,6 +24,50 @@ class UserRolesService
         $this->validator = $validationService;
     }
 
+    public function addOrRevokeRoles(Request $request, User $user): Collection
+    {
+        $fromEditor = collect($request->get('roles'));
+
+        $grantedRoles = collect();
+
+        if ($fromEditor->isNotEmpty()) {
+            $grantedRoles = $fromEditor->map(static function ($role) use ($user) {
+                if ($role['checked']) {
+                    $user->assignRole($role['name']);
+
+                    return ['name' => $role['name']];
+                }
+                $user->removeRole($role['name']);
+
+                return null;
+            })->filter();
+        }
+
+        return $grantedRoles;
+    }
+
+    public function addOrRevokePermissions(Request $request, User $user): Collection
+    {
+        $fromEditor = collect($request->get('permissions'));
+
+        $grantedPermissions = collect();
+
+        if ($fromEditor->isNotEmpty()) {
+            $grantedPermissions = $fromEditor->map(static function ($permission) use ($user) {
+                if ($permission['checked']) {
+                    $user->givePermissionTo($permission['name']);
+
+                    return ['name' => $permission['name']];
+                }
+                $user->revokePermissionTo($permission['name']);
+
+                return null;
+            })->filter();
+        }
+
+        return $grantedPermissions;
+    }
+
     protected function hasError(): bool
     {
         return ! empty($this->errorMessage);
@@ -35,25 +79,6 @@ class UserRolesService
         $user = User::find($userId);
 
         return $user->hasRole('Administrator') ? true : false;
-    }
-
-    public function edit(Request $request): JsonResponse
-    {
-        $userId = $request->get('user_id');
-        $user = User::find($userId);
-
-        if ($user) {
-            $this->processRoles($user, $request);
-            $this->processPermissions($user, $request);
-        } else {
-            $this->errorMessage = self::USER_NOT_FOUND_ERROR;
-        }
-
-        if ($this->hasError()) {
-            return response()->json(['error' => $this->errorMessage], 400);
-        }
-
-        return response()->json(['success' => true]);
     }
 
     public function getPermissionsAssignedToRole(Request $request): JsonResponse
@@ -78,98 +103,9 @@ class UserRolesService
         return response()->json(['success' => true, 'permissions' => $permissions]);
     }
 
-    protected function processRoles(User $user, Request $request): void
-    {
-        $currentUserRoles = $this->getCurrentUserRoles($user);
-        $rolesFromEditor = $this->getValuesFromEditorCheckboxes($request, 'role');
-
-        $this->addRoles($user, $currentUserRoles, $rolesFromEditor);
-        if ($currentUserRoles->isNotEmpty()) {
-            $this->removeRoles($user, $currentUserRoles, $rolesFromEditor);
-        }
-    }
-
-    protected function processPermissions(User $user, Request $request): void
-    {
-        $currentUserPermissions = $this->getCurrentUserPermissions($user);
-        $permissionsFromEditor = $this->getValuesFromEditorCheckboxes($request, 'permission');
-
-        $this->addPermissions($user, $permissionsFromEditor, $currentUserPermissions);
-        if ($currentUserPermissions->isNotEmpty()) {
-            $this->removePermissions($user, $permissionsFromEditor, $currentUserPermissions);
-        }
-    }
-
-    protected function addRoles(User $user, $currentUserRoles, $rolesFromEditor): void
-    {
-        $toBeAdded = $rolesFromEditor->diff($currentUserRoles);
-        if ($toBeAdded->isNotEmpty()) {
-            $toBeAdded->values()->each(function (string $role) use ($user) {
-                try {
-                    $user->assignRole($role);
-                } catch (RoleDoesNotExist $e) {
-                    $this->errorMessage = $e->getMessage();
-                }
-            });
-        }
-    }
-
-    protected function removeRoles(User $user, $currentUserRoles, $rolesFromEditor): void
-    {
-        $toBeRemoved = $currentUserRoles->diff($rolesFromEditor);
-        if ($toBeRemoved->isNotEmpty()) {
-            $toBeRemoved->values()->each(function (string $role) use ($user) {
-                try {
-                    $user->removeRole($role);
-                } catch (RoleDoesNotExist $e) {
-                    $this->errorMessage = $e->getMessage();
-                }
-            });
-        }
-    }
-
-    protected function addPermissions(User $user, $permissionsFromEditor, $currentUserPermissions): void
-    {
-        $toBeAdded = $permissionsFromEditor->diff($currentUserPermissions);
-        if ($toBeAdded->isNotEmpty()) {
-            $toBeAdded->values()->each(function (string $permission) use ($user) {
-                try {
-                    $user->givePermissionTo($permission);
-                } catch (PermissionDoesNotExist $e) {
-                    $this->errorMessage = $e->getMessage();
-                }
-            });
-        }
-    }
-
-    protected function removePermissions(User $user, $permissionsFromEditor, $currentUserPermissions): void
-    {
-        $toBeRemoved = $currentUserPermissions->diff($permissionsFromEditor);
-        if ($toBeRemoved->isNotEmpty()) {
-            $toBeRemoved->values()->each(function (string $permission) use ($user) {
-                try {
-                    $user->revokePermissionTo($permission);
-                } catch (PermissionDoesNotExist $e) {
-                    $this->errorMessage = $e->getMessage();
-                }
-            });
-        }
-    }
-
     protected function getCurrentUserRoles(User $user): Collection
     {
         return $user->roles()->pluck('name');
     }
 
-    protected function getValuesFromEditorCheckboxes(Request $request, string $entityType): Collection
-    {
-        return collect($request->get($entityType));
-    }
-
-    protected function getCurrentUserPermissions(User $user): Collection
-    {
-        return $user->getAllPermissions()->map(static function (Permission $item) {
-            return $item->name;
-        });
-    }
 }

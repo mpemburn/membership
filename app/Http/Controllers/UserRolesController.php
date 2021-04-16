@@ -60,22 +60,21 @@ class UserRolesController extends Controller
             'roles' => ['required'],
             'permissions' => ['required']
         ])) {
-            $user = User::where('id', '=', $request->get('id'));
+            $user = User::where('id', '=', $request->get('id'))->first();
+            if ($user) {
+                $grantedRoles = $this->userRolesService->addOrRevokeRoles($request, $user);
+                $grantedPermissions = $this->userRolesService->addOrRevokePermissions($request, $user);
 
-            $roles = Role::whereIn('name', $request->get('roles'));
-            return response()->json([
-                'success' => true,
-                'user' => $user->first()->toArray(),
-                'roles' => $request->get('roles')
-            ]);
+                return response()->json([
+                    'success' => true,
+                    'user' => $user,
+                    'roles' => $grantedRoles,
+                    'permissions' => $grantedPermissions
+                ]);
+            }
         }
 
         return response()->json(['error' => $this->validator->getMessage()], 400);
-    }
-
-    public function edit(Request $request)
-    {
-        return $this->userRolesService->edit($request);
     }
 
     public function getAssigned(Request $request): JsonResponse

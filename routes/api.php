@@ -39,6 +39,7 @@ Route::middleware('auth:api')->group( function () {
     Route::apiResource('user_roles', UserRolesController::class)
         ->only('index', 'show', 'store');
 
+    
     Route::get('/members', MembersController::class . '@index');
     Route::post('/member', MembersController::class . '@store');
     Route::post('/member_email', MembersController::class . '@addEmailToMember');
