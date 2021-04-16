@@ -196,10 +196,20 @@ export default {
 
             this.roleId = role.id;
             this.roleName = role.name;
-            this.hydrate(response.data.role.permissions, true);
-            this.hydrate(response.data.diff, false);
+            this.hydrateRoles(response.data.role.roles);
+            // this.hydrateRoles(response.data.diff, false);
         },
-        hydrate(permissions, shouldCheck) {
+        hydrateRoles(roles, shouldCheck) {
+            roles.forEach(permission => {
+                let checkbox = {
+                    id: role.id,
+                    name: role.name,
+                    checked: shouldCheck
+                }
+                this.permissions.push(checkbox);
+            });
+        },
+        hydratePermissions(permissions, shouldCheck) {
             permissions.forEach(permission => {
                 let checkbox = {
                     id: permission.id,

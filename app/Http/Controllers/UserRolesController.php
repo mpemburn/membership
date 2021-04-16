@@ -8,17 +8,21 @@ use App\Services\ValidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class UserRolesController extends Controller
 {
     protected UserRolesService $userRolesService;
+    protected ValidationService $validator;
 
-    public function __construct(UserRolesService $userRolesService)
+    public function __construct(UserRolesService $userRolesService, ValidationService $validationService)
     {
         $this->userRolesService = $userRolesService;
+        $this->validator = $validationService;
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
         $users = User::with('roles')
             ->with('permissions')
@@ -27,14 +31,46 @@ class UserRolesController extends Controller
         return response()->json(['success' => true, 'users' => $users]);
     }
 
-    public function show(Request $request, int $userId)
+    public function show(Request $request, int $userId): JsonResponse
     {
         $user = User::where('id', '=', $userId)
             ->with('roles')
             ->with('permissions')
             ->first();
 
-        return response()->json(['success' => true, 'user' => $user]);
+        $allRoles = Role::all();
+        $userRoles = $user->roles ?? [];
+        $allPermissions = Permission::all();
+        $userPermissions = $user->permissions ?? [];
+
+        return response()->json([
+            'success' => true,
+            'user' => $user,
+            'diff' => [
+                'roles' => $allRoles->diff($userRoles),
+                'permissions' => $allPermissions->diff($userPermissions)
+            ]
+        ]);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        if ($this->validator->handle($request, [
+            'id' => ['required'],
+            'roles' => ['required'],
+            'permissions' => ['required']
+        ])) {
+            $user = User::where('id', '=', $request->get('id'));
+
+            $roles = Role::whereIn('name', $request->get('roles'));
+            return response()->json([
+                'success' => true,
+                'user' => $user->first()->toArray(),
+                'roles' => $request->get('roles')
+            ]);
+        }
+
+        return response()->json(['error' => $this->validator->getMessage()], 400);
     }
 
     public function edit(Request $request)

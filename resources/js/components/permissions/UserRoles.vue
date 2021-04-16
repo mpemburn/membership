@@ -39,14 +39,14 @@
                             Roles:
                             <div class="border-solid border-gray-300 border-2 overflow-scroll">
                                 <ul class="p-4">
-                                    <li v-for="roles in user.roles">
+                                    <li v-for="role in user.roles">
                                         <input
                                             type="checkbox"
-                                            name="role_permissions"
-                                            v-model="permission.checked"
-                                            :value="permission.id"
+                                            name="role[]"
+                                            v-model="role.checked"
+                                            :value="role.id"
                                         >
-                                        {{ permission.name }}
+                                        {{ role.name }}
                                     </li>
                                 </ul>
                             </div>
@@ -55,10 +55,10 @@
                             Permissions:
                             <div class="border-solid border-gray-300 border-2 overflow-scroll">
                                 <ul id="role_permissions" class="p-4">
-                                    <li v-for="permission in permissions">
+                                    <li v-for="permission in user.permissions">
                                         <input
                                             type="checkbox"
-                                            name="role_permissions"
+                                            name="permission[]"
                                             v-model="permission.checked"
                                             :value="permission.id"
                                         >
@@ -75,31 +75,9 @@
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
                     </button>
-                    <button v-if="modalContext === 'Add'" @click="createRole"
+                    <button @click="saveUser"
                             class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">
-                        Submit
-                    </button>
-                    <button v-if="modalContext === 'Edit'" @click="updateRole"
-                            class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">
-                        Update
-                    </button>
-                </div>
-            </component>
-        </section>
-        <section>
-            <component v-if="showConfirm" :is="modal" v-bind="{ title: 'Delete', width: 'full' }"
-                       @closeModal="showConfirm = false">
-                <div>
-                    {{ confirmMessage }}
-                </div>
-                <div class="text-center mt-4">
-                    <button @click="showConfirm = false"
-                            class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
-                        Cancel
-                    </button>
-                    <button @click="deleteRole"
-                            class="rounded px-3 py-1 bg-red-700 hover:bg-red-500 text-white focus:shadow-outline focus:outline-none">
-                        Okay
+                        Save
                     </button>
                 </div>
             </component>
@@ -171,28 +149,49 @@ export default {
             this.userName = null;
             axios.get('/api/user_roles/' + userId)
                 .then(response => {
-                    if (! response.user) {
+                    if (! response.data.user) {
                         return;
                     }
-                    let user = response.user;
+                    let user = response.data.user;
+                    let diff = response.data.diff;
                     this.user = {
                         id: user.id,
                         name: user.name,
-                        roles: user.roles,
-                        permissions: user.permissions,
+                        roles: this.populateCheckboxes(user.roles, diff.roles),
+                        permissions: this.populateCheckboxes(user.permissions, diff.permissions),
                     }
 
                     this.showModal = true;
                 });
         },
+        populateCheckboxes(userRoles, diffRoles) {
+            let roles = this.hydrate(userRoles, true);
+            let diff = this.hydrate(diffRoles, false);
+
+            return roles.concat(diff);
+        },
+        hydrate(entities, shouldCheck) {
+            let results = [];
+
+            entities.forEach(entity => {
+                let checkbox = {
+                    id: entity.id,
+                    name: entity.name,
+                    checked: shouldCheck
+                }
+                results.push(checkbox);
+            });
+
+            return results;
+        },
         submitForm() {
             this.updateRole()
         },
-        updateRole() {
-            axios.put('/api/users/update', {
+        saveUser() {
+            axios.put('/api/user_roles/update', {
                 id: this.userId,
-                name: this.userName,
-                user_permissions: this.permissions
+                roles: this.user.roles,
+                permissions: this.user.permissions
             }).then(response => {
                 if (response.data.success) {
                     this.users.forEach(user => {
