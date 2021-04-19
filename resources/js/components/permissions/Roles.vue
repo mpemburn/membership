@@ -198,28 +198,11 @@ export default {
 
             this.roleId = role.id;
             this.roleName = role.name;
-            this.hydrateRoles(response.data.role.roles);
-            // this.hydrateRoles(response.data.diff, false);
-        },
-        hydrateRoles(roles, shouldCheck) {
-            roles.forEach(permission => {
-                let checkbox = {
-                    id: role.id,
-                    name: role.name,
-                    checked: shouldCheck
-                }
-                this.permissions.push(checkbox);
-            });
-        },
-        hydratePermissions(permissions, shouldCheck) {
-            permissions.forEach(permission => {
-                let checkbox = {
-                    id: permission.id,
-                    name: permission.name,
-                    checked: shouldCheck
-                }
-                this.permissions.push(checkbox);
-            });
+
+            let permissions = this.hydrate(response.data.role_permissions, true);
+            let diff = this.hydrate(response.data.diff, false);
+
+            this.permissions = permissions.concat(diff);
         },
         submitForm() {
             if (this.roleId === null) {
@@ -238,7 +221,7 @@ export default {
                 this.showModal = false;
                 this.readRolesFromAPI();
             }).catch(error => {
-                this.errorMessage = 'Error: ' + error.response.data.error;
+                this.showError(error);
             });
         },
         updateRole() {
@@ -256,7 +239,7 @@ export default {
                     this.showModal = false;
                 }
             }).catch(error => {
-                console.log(error);
+                this.showError(error);
             });
         },
         deleteRole() {
@@ -264,7 +247,9 @@ export default {
                 .then(response => {
                     this.showConfirm = false;
                     this.readRolesFromAPI();
-                });
+                }).catch(error => {
+                console.log(error);
+            });
         },
         getRoleById(roleId) {
             let found = null;

@@ -26,6 +26,41 @@ Vue.component('roles-all', require('./components/permissions/Roles.vue').default
 Vue.component('permissions-all', require('./components/permissions/Permissions.vue').default);
 Vue.component('user-roles-all', require('./components/permissions/UserRoles.vue').default);
 
+Vue.mixin({
+    methods: {
+        hydrate(entities, shouldCheck) {
+            let results = [];
+
+            entities.forEach(entity => {
+                let checkbox = {
+                    id: entity.id,
+                    name: entity.name,
+                    checked: shouldCheck
+                }
+                results.push(checkbox);
+            });
+
+            return results;
+        },
+        showError(error) {
+            if (! error || this.errorMessage === undefined) {
+                return
+            }
+
+            if (error.response.data.message && error.response.data.message === 'Unauthenticated.') {
+                this.errorMessage = 'Error: Your session has timed out...reloading.';
+                setTimeout(() => {
+                    location.reload();
+                }, 3000);
+            }
+
+            if (error.response.data.error) {
+                this.errorMessage = 'Error: ' + error.response.data.error;
+            }
+        }
+    }
+});
+
 const app = new Vue({
     el: '#app',
     components: {},

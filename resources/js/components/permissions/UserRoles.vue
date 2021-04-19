@@ -170,20 +170,6 @@ export default {
 
             return roles.concat(diff);
         },
-        hydrate(entities, shouldCheck) {
-            let results = [];
-
-            entities.forEach(entity => {
-                let checkbox = {
-                    id: entity.id,
-                    name: entity.name,
-                    checked: shouldCheck
-                }
-                results.push(checkbox);
-            });
-
-            return results;
-        },
         saveUser() {
             axios.post('/api/user_roles', {
                 id: this.userId,
