@@ -32,7 +32,7 @@ Route::group(['middleware' => 'auth'], function () {
         return view('members.index');
     })->name('members.list');
     Route::get('/roles', function () {
-        return view('roles.index-new');
+        return view('roles.index');
     })->name('roles');
 });
 

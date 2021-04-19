@@ -68,6 +68,7 @@
                 </form>
 
                 <div class="text-right mt-4">
+                    <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
                     <button @click="showModal = false"
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
@@ -121,6 +122,7 @@ export default {
             modalContext: null,
             modalTitle: null,
             confirmMessage: null,
+            errorMessage: null,
             roleId: null,
             currentRoleId: null,
             roleName: null,
@@ -165,7 +167,7 @@ export default {
                 .then(response => {
                     this.roleName = null;
                     this.permissions = [];
-                    this.hydrate(response.data.permissions, false);
+                    this.hydratePermissions(response.data.permissions, false);
                     this.modalContext = 'Add';
                     this.modalTitle = 'Add New Role';
                     this.showModal = true;
@@ -228,12 +230,15 @@ export default {
 
         },
         createRole() {
+            this.errorMessage = null;
             axios.post('/api/roles/create', {
                 name: this.roleName,
                 role_permissions: this.permissions
             }).then(response => {
                 this.showModal = false;
                 this.readRolesFromAPI();
+            }).catch(error => {
+                this.errorMessage = 'Error: ' + error.response.data.error;
             });
         },
         updateRole() {
@@ -250,6 +255,8 @@ export default {
                     });
                     this.showModal = false;
                 }
+            }).catch(error => {
+                console.log(error);
             });
         },
         deleteRole() {

@@ -31,7 +31,7 @@
         <section>
             <component v-if="showModal" :is="modal" v-bind="{ title: modalTitle, width: 'full' }"
                        @closeModal="showModal = false">
-                <form v-on:submit="submitForm">
+                <form>
                     <div class="grid grid-cols-1 md:grid-cols-2">
                         <div class="form-group font-bold">
                         </div>
@@ -184,9 +184,6 @@ export default {
 
             return results;
         },
-        submitForm() {
-            this.updateRole()
-        },
         saveUser() {
             axios.post('/api/user_roles', {
                 id: this.userId,
@@ -197,6 +194,8 @@ export default {
                     this.showModal = false;
                     this.readUsersFromAPI();
                 }
+            }).catch(response => {
+
             });
         },
         getRoleById(userId) {
@@ -211,7 +210,10 @@ export default {
             return found;
         },
         initDataTable() {
-            this.dataTable = $('#user-roles-table').DataTable({});
+            this.dataTable = $('#user-roles-table').DataTable({
+                pageLength: 100,
+                lengthMenu: [10, 25, 50, 75, 100],
+            });
         },
         refreshTable() {
             if (this.dataTable !== undefined) {

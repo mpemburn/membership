@@ -59,7 +59,6 @@ class RolesController extends Controller
 
     public function create(Request $request): JsonResponse
     {
-        Log::debug($request->get('name'));
         $response = $this->crudService->create($request, new RoleUi());
 
         if ($request->has('role_permissions')) {
