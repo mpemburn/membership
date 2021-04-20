@@ -5,6 +5,8 @@
             Add Role
         </button>
 
+        <div v-if="errorMessage && ! showModal" class="m-2 text-danger">{{ errorMessage }}</div>
+
         <table id="roles-table" class="stripe">
             <thead>
             <tr>
@@ -91,6 +93,7 @@
                     {{ confirmMessage }}
                 </div>
                 <div class="text-center mt-4">
+                    <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
                     <button @click="showConfirm = false"
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
@@ -166,12 +169,13 @@ export default {
             axios.get('/api/permissions')
                 .then(response => {
                     this.roleName = null;
-                    this.permissions = [];
-                    this.hydratePermissions(response.data.permissions, false);
+                    this.permissions = this.hydrate(response.data.permissions, false);
                     this.modalContext = 'Add';
                     this.modalTitle = 'Add New Role';
                     this.showModal = true;
-                });
+                }).catch(response => {
+                    this.handleUnauthenticated(response.response.data);
+            });
         },
         editButtonMessageRecieved(roleId) {
             this.roleId = roleId;
@@ -183,7 +187,9 @@ export default {
                     this.modalContext = 'Edit';
                     this.modalTitle = 'Edit Role';
                     this.showModal = true;
-                });
+                }).catch(error => {
+                    this.handleUnauthenticated(error.response.data);
+            });
         },
         deleteButtonMessageRecieved(roleId) {
             let role = this.getRoleById(roleId);
@@ -248,7 +254,7 @@ export default {
                     this.showConfirm = false;
                     this.readRolesFromAPI();
                 }).catch(error => {
-                console.log(error);
+                    this.handleUnauthenticated(error.response.data);
             });
         },
         getRoleById(roleId) {
