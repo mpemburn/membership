@@ -5,6 +5,8 @@
             Add Permission
         </button>
 
+        <div v-if="errorMessage && ! showModal" class="m-2 text-danger">{{ errorMessage }}</div>
+
         <table id="permissions-table" class="stripe">
             <thead>
             <tr>
@@ -44,6 +46,7 @@
                 </form>
 
                 <div class="text-right mt-4">
+                    <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
                     <button @click="showModal = false"
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
@@ -66,6 +69,7 @@
                     {{ confirmMessage }}
                 </div>
                 <div class="text-center mt-4">
+                    <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
                     <button @click="showConfirm = false"
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
@@ -98,6 +102,7 @@ export default {
             modalContext: null,
             modalTitle: null,
             confirmMessage: null,
+            errorMessage: null,
             permissionId: null,
             currentPermissionId: null,
             permissionName: null,
@@ -150,7 +155,9 @@ export default {
                     this.modalTitle = 'Edit Permission';
                     this.permissionName = response.data.permission.name;
                     this.showModal = true;
-                });
+                }).catch(error => {
+                    this.showError(error);
+            });
         },
         deleteButtonMessageRecieved(permissionId) {
             let permission = this.getPermissionById(permissionId);
@@ -175,6 +182,8 @@ export default {
             }).then(response => {
                 this.showModal = false;
                 this.readPermissionsFromAPI();
+            }).catch(error => {
+                this.showError(error);
             });
         },
         updatePermission() {
@@ -191,6 +200,8 @@ export default {
                     });
                     this.showModal = false;
                 }
+            }).catch(error => {
+                this.showError(error);
             });
         },
         deletePermission() {
@@ -198,7 +209,9 @@ export default {
                 .then(response => {
                     this.showConfirm = false;
                     this.readPermissionsFromAPI();
-                });
+                }).catch(error => {
+                    this.showError(error);
+            });
         },
         getPermissionById(permissionId) {
             let found = null;

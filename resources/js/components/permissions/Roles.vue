@@ -173,8 +173,8 @@ export default {
                     this.modalContext = 'Add';
                     this.modalTitle = 'Add New Role';
                     this.showModal = true;
-                }).catch(response => {
-                    this.handleUnauthenticated(response.response.data);
+                }).catch(error => {
+                    this.showError(error);
             });
         },
         editButtonMessageRecieved(roleId) {
@@ -188,7 +188,7 @@ export default {
                     this.modalTitle = 'Edit Role';
                     this.showModal = true;
                 }).catch(error => {
-                    this.handleUnauthenticated(error.response.data);
+                    this.showError(error);
             });
         },
         deleteButtonMessageRecieved(roleId) {
@@ -254,7 +254,7 @@ export default {
                     this.showConfirm = false;
                     this.readRolesFromAPI();
                 }).catch(error => {
-                    this.handleUnauthenticated(error.response.data);
+                    this.showError(error);
             });
         },
         getRoleById(roleId) {

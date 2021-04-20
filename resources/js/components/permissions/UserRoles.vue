@@ -1,5 +1,8 @@
 <template>
     <div class="">
+
+        <div v-if="errorMessage && ! showModal" class="m-2 text-danger">{{ errorMessage }}</div>
+
         <table id="user-roles-table" class="stripe">
             <thead>
             <tr>
@@ -71,6 +74,7 @@
                 </form>
 
                 <div class="text-right mt-4">
+                    <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
                     <button @click="showModal = false"
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
@@ -100,6 +104,7 @@ export default {
             modalContext: null,
             modalTitle: null,
             confirmMessage: null,
+            errorMessage: null,
             userId: null,
             currentRoleId: null,
             user: {
@@ -162,7 +167,9 @@ export default {
                     }
 
                     this.showModal = true;
-                });
+                }).catch(error => {
+                    this.showError(error);
+            });
         },
         populateCheckboxes(userRoles, diffRoles) {
             let roles = this.hydrate(userRoles, true);
@@ -180,8 +187,8 @@ export default {
                     this.showModal = false;
                     this.readUsersFromAPI();
                 }
-            }).catch(response => {
-
+            }).catch(error => {
+                this.showError(error);
             });
         },
         getRoleById(userId) {
