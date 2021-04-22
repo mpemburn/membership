@@ -4,12 +4,14 @@ namespace App\Services;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RolesService
 {
     public const NO_ROLE_NAME_PROVIDED = 'No role name provided.';
+    public const INVALID_ROLE_NAME_PROVIDED = 'The role name provided is invalid.';
 
     protected ValidationService $validator;
 
@@ -18,20 +20,33 @@ class RolesService
         $this->validator = $validationService;
     }
 
-    public function getPermissionsForRole(Request $request): JsonResponse
+    public function retrievePermissionsForRole(Request $request): JsonResponse
     {
-        $permissions = [];
         $roleName = $request->get('role_name');
         if ($roleName) {
-            $role = Role::findByName($roleName, 'web');
-            $role->getAllPermissions()->each(static function (Permission $permission) use (&$permissions) {
-                $permissions[] = $permission->name;
-            });
+            $permissions = $this->getPermissionsForRole($roleName);
+            if ($permissions->isEmpty()) {
+                return response()->json(['error' => self::INVALID_ROLE_NAME_PROVIDED . ': ' . $roleName], 400);
+            }
         } else {
             return response()->json(['error' => self::NO_ROLE_NAME_PROVIDED], 400);
         }
 
         return response()->json(['success' => true, 'permissions' => $permissions]);
+    }
+
+    public function getPermissionsForRole(string $roleName): Collection
+    {
+        $permissions = collect();
+        if ($roleName) {
+            $role = Role::findByName($roleName, 'web');
+            $permissions = $role->getAllPermissions()
+                ->map(static function (Permission $permission) {
+                return $permission->name;
+            });
+        }
+
+        return $permissions;
     }
 
     public function addOrRevokePermissions(Role $role, Request $request): JsonResponse

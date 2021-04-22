@@ -1,5 +1,7 @@
 <?php
 
+use App\Services\RolesService;
+use App\Services\ValidationService;
 use Spatie\Permission\Models\Role;
 
 Route::get('/mwp', function () {
@@ -16,6 +18,12 @@ Route::get('/mwp', function () {
         }
     });
 
+});
+
+Route::get('/service', function () {
+    $perm = (new RolesService(new ValidationService()))->getPermissionsForRole('Administrator');
+
+    !d($perm);
 });
 
 Route::get('/token', function () {

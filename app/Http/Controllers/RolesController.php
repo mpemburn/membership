@@ -94,7 +94,7 @@ class RolesController extends Controller
 
     public function getPermissions(Request $request): JsonResponse
     {
-        return $this->rolesService->getPermissionsForRole($request);
+        return $this->rolesService->retrievePermissionsForRole($request);
     }
 
     protected function processPermissions(Request $request, JsonResponse $response): JsonResponse
