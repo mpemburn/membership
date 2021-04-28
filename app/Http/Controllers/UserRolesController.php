@@ -43,6 +43,14 @@ class UserRolesController extends Controller
         $allPermissions = Permission::all();
         $userPermissions = $user->permissions ?? [];
         $userAssignedPermissions = $this->userRolesService->getUserRoleBasedPermissions($userRoles);
+        $assignedPermissions = $userAssignedPermissions->filter(static function ($permission) use ($userPermissions) {
+            $name = $permission->name;
+            $contains = $userPermissions->contains(static function ($value, $key) use ($name) {
+                return $value->name === $name;
+            });
+
+            return ! $contains;
+        });
 
         return response()->json([
             'success' => true,
@@ -51,7 +59,7 @@ class UserRolesController extends Controller
                 'roles' => $allRoles->diff($userRoles),
                 'permissions' => $allPermissions->diff($userPermissions)
             ],
-            'assigned_permissions' => $userAssignedPermissions->diff($userPermissions)
+            'assigned_permissions' => $assignedPermissions
         ]);
     }
 
