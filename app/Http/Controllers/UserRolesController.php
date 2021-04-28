@@ -42,6 +42,7 @@ class UserRolesController extends Controller
         $userRoles = $user->roles ?? [];
         $allPermissions = Permission::all();
         $userPermissions = $user->permissions ?? [];
+        $userAssignedPermissions = $this->userRolesService->getUserRoleBasedPermissions($userRoles);
 
         return response()->json([
             'success' => true,
@@ -49,7 +50,8 @@ class UserRolesController extends Controller
             'diff' => [
                 'roles' => $allRoles->diff($userRoles),
                 'permissions' => $allPermissions->diff($userPermissions)
-            ]
+            ],
+            'assigned_permissions' => $userAssignedPermissions->diff($userPermissions)
         ]);
     }
 

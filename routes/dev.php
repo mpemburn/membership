@@ -1,7 +1,10 @@
 <?php
 
+use App\Models\User;
 use App\Services\RolesService;
+use App\Services\UserRolesService;
 use App\Services\ValidationService;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 Route::get('/mwp', function () {
@@ -31,5 +34,21 @@ Route::get('/token', function () {
     $token = auth()->user()->createToken('mpemburn@gmail.com'.'-'.now());
 
     !d($token);
+});
+
+Route::get('/assigned', function () {
+    $user = User::where('id', '=', 20)
+        ->with('roles')
+        ->with('permissions')
+        ->first();
+    $userRoles = $user->roles ?? [];
+    $userPermissions = $user->permissions ?? [];
+
+
+    $userRolesService = new UserRolesService(new ValidationService());
+    $permissions = $userRolesService->getUserRoleBasedPermissions($userRoles);
+    !d($permissions->toArray());
+    !d($userPermissions->toArray());
+    !d($permissions->diff($userPermissions)->toArray());
 });
 

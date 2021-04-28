@@ -103,6 +103,21 @@ class UserRolesService
         return response()->json(['success' => true, 'permissions' => $permissions]);
     }
 
+    public function getUserRoleBasedPermissions(Collection $userRoles): Collection
+    {
+        $permissions = collect();
+
+        $userRoles->each(function (Role $role) use (&$permissions) {
+            $rolePermissions = collect($role->getAllPermissions()->map(static function (Permission $permission) {
+                return $permission;
+            }));
+
+            $permissions = $permissions->merge($rolePermissions);
+        });
+
+        return $permissions;
+    }
+
     protected function getCurrentUserRoles(User $user): Collection
     {
         return $user->roles()->pluck('name');

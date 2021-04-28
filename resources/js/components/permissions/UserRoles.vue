@@ -64,8 +64,10 @@
                                             name="permission[]"
                                             v-model="permission.checked"
                                             :value="permission.id"
-                                        >
-                                        {{ permission.name }}
+                                        > {{ permission.name }}
+                                    </li>
+                                    <li v-for="assigned in user.assignedPermissions" class="text-muted">
+                                        <span class="m-0 text-2xl align-middle" style="position: relative; left: -3px ; line-height: 0.75;">&#9745;</span>{{ assigned.name }}
                                     </li>
                                 </ul>
                             </div>
@@ -157,6 +159,7 @@ export default {
                     if (! response.data.user) {
                         return;
                     }
+                    console.log(response.data);
                     let user = response.data.user;
                     let diff = response.data.diff;
                     this.user = {
@@ -164,6 +167,7 @@ export default {
                         name: user.name,
                         roles: this.populateCheckboxes(user.roles, diff.roles),
                         permissions: this.populateCheckboxes(user.permissions, diff.permissions),
+                        assignedPermissions: response.data.assigned_permissions
                     }
 
                     this.showModal = true;
