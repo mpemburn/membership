@@ -71,6 +71,9 @@
                                     </li>
                                 </ul>
                             </div>
+                            <div v-if="user.assignedPermissions.length > 0">
+                                NOTE: Grayed permissions are assigned to one or more of this user's Roles.
+                            </div>
                         </div>
                     </div>
                 </form>
