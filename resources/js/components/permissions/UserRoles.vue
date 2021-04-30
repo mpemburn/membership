@@ -38,6 +38,9 @@
                 :showClose="true"
                 :backgroundClose="true"
             >
+                <div class="mb-1 text-xl font-bold">
+                    Edit Roles for {{ user.name }}
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="form-group font-bold overflow-scroll">
                         Roles:
@@ -59,7 +62,7 @@
                         Permissions:
                         <div class="border-solid border-gray-300 border-2 overflow-scroll">
                             <ul class="p-4">
-                                <li v-for="permission in user.permissions">ilwin
+                                <li v-for="permission in user.permissions">
                                     <input
                                         type="checkbox"
                                         name="permission[]"
@@ -97,14 +100,12 @@
 <script>
 import axios from "axios";
 import EditButton from '../buttons/EditButton.vue';
-import Modal from '../Modal.vue';
 
 export default {
     name: "UserRoles",
     data() {
         return {
             showModal: false,
-            showModalx: false,
             showConfirm: false,
             modalContext: null,
             modalTitle: null,
@@ -227,7 +228,6 @@ export default {
     },
     components: {
         EditButton,
-        Modal
     },
     updated() {
         if (this.dataTable === undefined) {

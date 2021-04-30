@@ -1,6 +1,6 @@
 <div class="w-2/3">
     <main class="container mx-auto max-w-screen-lg h-96">
-        <!-- permission edit modal -->
+        <!-- edit modal -->
         <article id="editor" aria-label="User Role Edit Modal"
                  class="relative h-full flex flex-col bg-white shadow-xl rounded-md">
 

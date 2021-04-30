@@ -30,14 +30,27 @@
             </tbody>
         </table>
         <section>
-            <component v-if="showModal" :is="modal" v-bind="{ title: modalTitle, width: 'full' }"
-                       @closeModal="showModal = false">
+            <vue-tailwind-modal
+                :showing="showModal"
+                @close="showModal = false"
+                :showClose="true"
+                :backgroundClose="true"
+            >
+                <div class="mb-1 text-xl font-bold">
+                    {{ modalTitle }}
+                </div>
                 <form v-on:submit="submitForm">
                     <div class="grid grid-cols-1 md:grid-cols-2">
                         <input type="hidden" name="permission_id" :value="permissionId"/>
                         <div class="form-group font-bold">
                             <div>Permission Name:</div>
-                            <input type="text" name="permission_name" v-model="permissionName"/>
+                            <input
+                                class="w-80"
+                                type="text"
+                                name="permission_name"
+                                v-model="permissionName"
+                                placeholder="Enter a permission name"
+                            />
                             <div id="name_caution" class="w-2/3 text-red-600 font-normal hidden">
                                 <b>CAUTION:</b> Changing the <b>Permission Name</b> may affect existing permissions.
                             </div>
@@ -47,7 +60,7 @@
 
                 <div class="text-right mt-4">
                     <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
-                    <button @click="showModal = false"
+                    <button @click="closeModal()"
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
                     </button>
@@ -60,17 +73,21 @@
                         Update
                     </button>
                 </div>
-            </component>
+            </vue-tailwind-modal>
         </section>
         <section>
-            <component v-if="showConfirm" :is="modal" v-bind="{ title: 'Delete', width: 'full' }"
-                       @closeModal="showConfirm = false">
+            <vue-tailwind-modal
+                :showing="showConfirm"
+                @close="showConfirm = false"
+                :showClose="true"
+                :backgroundClose="true"
+            >
                 <div>
                     {{ confirmMessage }}
                 </div>
                 <div class="text-center mt-4">
                     <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
-                    <button @click="showConfirm = false"
+                    <button @click="closeModal()"
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
                     </button>
@@ -79,7 +96,7 @@
                         Okay
                     </button>
                 </div>
-            </component>
+            </vue-tailwind-modal>
         </section>
     </div>
 </template>
@@ -99,6 +116,7 @@ export default {
             dataTables: null,
             showModal: false,
             showConfirm: false,
+            showConfirmx: false,
             modalContext: null,
             modalTitle: null,
             confirmMessage: null,
@@ -174,6 +192,11 @@ export default {
                 this.updatePermission()
             }
 
+        },
+        closeModal() {
+            this.showModal = false;
+            this.showConfirm = false;
+            this.errorMessage = null;
         },
         createPermission() {
             axios.post('/api/permissions/create', {
