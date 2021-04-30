@@ -36,7 +36,13 @@ class RolesController extends Controller
             ->with('permissions')
             ->get();
 
-        return response()->json(['success' => true, 'roles' => $roles]);
+        $protectedRoles = env('PROTECTED_ROLES');
+
+        return response()->json([
+            'success' => true,
+            'roles' => $roles,
+            'protectedRoles' => $protectedRoles ? explode(',', $protectedRoles) : []
+        ]);
     }
 
     public function getPermissionsForRole(Request $request): JsonResponse
@@ -53,7 +59,7 @@ class RolesController extends Controller
             'role' => $role->first(),
             'role_permissions' => $rolePermissions,
             'all_permissions' => $allPermissions,
-            'diff' => $allPermissions->diff($rolePermissions),
+            'diff' => $allPermissions->diff($rolePermissions)
         ]);
     }
 

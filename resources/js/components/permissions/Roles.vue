@@ -27,7 +27,7 @@
                     </component>
                 </td>
                 <td>
-                    <component :is="deleteButton" v-bind="{ deleteId: role.id }"
+                    <component v-if="! role.protected" :is="deleteButton" v-bind="{ deleteId: role.id }"
                                @messageFromDeleteButton="deleteButtonMessageRecieved">Delete
                     </component>
                 </td>
@@ -142,6 +142,7 @@ export default {
             currentRoleName: null,
             roles: [],
             permissions: [],
+            protectedRoles: [],
             headers: [
                 {text: "Role Name", class: "5/12"},
                 {text: "Permissions", class: "5/12"},
@@ -169,11 +170,15 @@ export default {
                     if (response.data.roles === null) {
                         return;
                     }
+
+                    this.protectedRoles = response.data.protectedRoles;
+
                     response.data.roles.forEach(role => {
                         this.roles.push({
                             'id': role.id,
                             'name': role.name,
-                            'permissions': role.permissions
+                            'permissions': role.permissions,
+                            'protected': protectedRoles.includes(role.name)
                         });
                     });
                 });
