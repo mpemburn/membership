@@ -16,6 +16,8 @@ if (token) {
         'X-Requested-With': 'XMLHttpRequest'
     };
 }
+import VueTailwindModal from "vue-tailwind-modal"
+Vue.component("VueTailwindModal", VueTailwindModal)
 
 Vue.component('edit-button', require('./components/buttons/EditButton.vue').default);
 Vue.component('edit-button', require('./components/buttons/EditButton.vue').default);

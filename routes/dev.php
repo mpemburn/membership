@@ -36,19 +36,7 @@ Route::get('/token', function () {
     !d($token);
 });
 
-Route::get('/assigned', function () {
-    $user = User::where('id', '=', 20)
-        ->with('roles')
-        ->with('permissions')
-        ->first();
-    $userRoles = $user->roles ?? [];
-    $userPermissions = $user->permissions ?? [];
-
-
-    $userRolesService = new UserRolesService(new ValidationService());
-    $permissions = $userRolesService->getUserRoleBasedPermissions($userRoles);
-    !d($permissions->toArray());
-    !d($userPermissions->toArray());
-    !d($permissions->diff($userPermissions)->toArray());
+Route::get('/modal', function () {
+    return view('vue-test', ['header' => 'head', 'slot' => 'slot']);
 });
 

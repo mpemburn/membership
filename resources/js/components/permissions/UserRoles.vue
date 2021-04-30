@@ -32,64 +32,63 @@
             </tbody>
         </table>
         <section>
-            <component v-if="showModal" :is="modal" v-bind="{ title: modalTitle, width: 'full' }"
-                       @closeModal="showModal = false">
-                <form>
-                    <div class="grid grid-cols-1 md:grid-cols-2">
-                        <div class="form-group font-bold">
-                        </div>
-                        <div class="form-group font-bold" id="uses_roles">
-                            Roles:
-                            <div class="border-solid border-gray-300 border-2 overflow-scroll">
-                                <ul class="p-4">
-                                    <li v-for="role in user.roles">
-                                        <input
-                                            type="checkbox"
-                                            name="role[]"
-                                            v-model="role.checked"
-                                            :value="role.id"
-                                        >
-                                        {{ role.name }}
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="form-group font-bold" id="user_permissions">
-                            Permissions:
-                            <div class="border-solid border-gray-300 border-2 overflow-scroll">
-                                <ul id="role_permissions" class="p-4">
-                                    <li v-for="permission in user.permissions">
-                                        <input
-                                            type="checkbox"
-                                            name="permission[]"
-                                            v-model="permission.checked"
-                                            :value="permission.id"
-                                        > {{ permission.name }}
-                                    </li>
-                                    <li v-for="assigned in user.assignedPermissions" class="text-muted">
-                                        <span class="m-0 text-2xl align-middle" style="position: relative; left: -3px ; line-height: 0.75;">&#9745;</span>{{ assigned.name }}
-                                    </li>
-                                </ul>
-                            </div>
-                            <div v-if="user.assignedPermissions.length > 0">
-                                NOTE: Grayed permissions are assigned to one or more of this user's Roles.
-                            </div>
+            <vue-tailwind-modal
+                :showing="showModal"
+                @close="showModal = false"
+                :showClose="true"
+                :backgroundClose="true"
+            >
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group font-bold overflow-scroll">
+                        Roles:
+                        <div class="border-solid border-gray-300 border-2 overflow-scroll">
+                            <ul class="p-4">
+                                <li v-for="role in user.roles">
+                                    <input
+                                        type="checkbox"
+                                        name="role[]"
+                                        v-model="role.checked"
+                                        :value="role.id"
+                                    >
+                                    {{ role.name }}
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                </form>
-
-                <div class="text-right mt-4">
+                    <div class="form-group font-bold overflow-scroll">
+                        Permissions:
+                        <div class="border-solid border-gray-300 border-2 overflow-scroll">
+                            <ul class="p-4">
+                                <li v-for="permission in user.permissions">ilwin
+                                    <input
+                                        type="checkbox"
+                                        name="permission[]"
+                                        v-model="permission.checked"
+                                        :value="permission.id"
+                                    > {{ permission.name }}
+                                </li>
+                                <li v-for="assigned in user.assignedPermissions" class="text-muted">
+                                    <input type="checkbox" style="opacity: 0.5;" checked disabled> {{ assigned.name }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div v-if="hasAssignedPermissions">
+                            NOTE: Grayed permissions are assigned to one or more of this user's Roles.
+                        </div>
+                    </div>
+                </div>
+                <footer class="flex justify-end px-0 pb-0 pt-4">
                     <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
                     <button @click="showModal = false"
-                            class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
+                            class="modal-close ml-3 rounded mx-1 px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
                     </button>
                     <button @click="saveUser"
                             class="rounded px-3 py-1 bg-blue-700 hover:bg-blue-500 disabled:opacity-50 text-white focus:shadow-outline focus:outline-none">
                         Save
                     </button>
-                </div>
-            </component>
+                </footer>
+            </vue-tailwind-modal>
         </section>
     </div>
 </template>
@@ -105,6 +104,7 @@ export default {
     data() {
         return {
             showModal: false,
+            showModalx: false,
             showConfirm: false,
             modalContext: null,
             modalTitle: null,
@@ -112,6 +112,7 @@ export default {
             errorMessage: null,
             userId: null,
             currentRoleId: null,
+            hasAssignedPermissions: false,
             user: {
                 name: null,
                 roles: [],
@@ -172,7 +173,7 @@ export default {
                         permissions: this.populateCheckboxes(user.permissions, diff.permissions),
                         assignedPermissions: response.data.assigned_permissions
                     }
-
+                    this.hasAssignedPermissions = this.user.assignedPermissions.length > 0;
                     this.showModal = true;
                 }).catch(error => {
                     this.showError(error);
