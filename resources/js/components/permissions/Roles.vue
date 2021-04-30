@@ -124,7 +124,6 @@
 import axios from "axios";
 import EditButton from '../buttons/EditButton.vue';
 import DeleteButton from '../buttons/DeleteButton.vue';
-import Modal from '../Modal.vue';
 
 export default {
     name: "Roles",
@@ -299,7 +298,6 @@ export default {
     components: {
         EditButton,
         DeleteButton,
-        Modal
     },
     updated() {
         if (this.dataTable === undefined) {
