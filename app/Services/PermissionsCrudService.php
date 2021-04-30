@@ -133,7 +133,7 @@ class PermissionsCrudService
         }
 
         try {
-            $model = $model->findById($modelId, 'web');
+            $model = $model->where('id', '=', $modelId)->first();
         } catch (\Exception $e) {
             $this->validator->addError($e->getMessage());
             Log::debug($e->getMessage());
