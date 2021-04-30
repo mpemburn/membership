@@ -51,7 +51,7 @@
                                 v-model="permissionName"
                                 placeholder="Enter a permission name"
                             />
-                            <div id="name_caution" class="w-2/3 text-red-600 font-normal hidden">
+                            <div v-if="showNameChangeWarning" class="w-2/3 text-red-600 font-normal">
                                 <b>CAUTION:</b> Changing the <b>Permission Name</b> may affect existing permissions.
                             </div>
                         </div>
@@ -123,6 +123,7 @@ export default {
             permissionId: null,
             currentPermissionId: null,
             permissionName: null,
+            currentPermissionName: null,
             permissions: [],
             headers: [
                 {text: "Permission Name", class: "w-10/12"},
@@ -171,6 +172,8 @@ export default {
                     this.modalContext = 'Edit';
                     this.modalTitle = 'Edit Permission';
                     this.permissionName = response.data.permission.name;
+                    this.currentPermissionName = this.permissionName;
+
                     this.showModal = true;
                 }).catch(error => {
                     this.showError(error);
@@ -256,6 +259,12 @@ export default {
                     this.initDataTable();
                 })
             }
+        }
+    },
+    computed: {
+        showNameChangeWarning() {
+            return this.modalContext === 'Edit'
+                && this.currentPermissionName !== this.permissionName;
         }
     },
     components: {

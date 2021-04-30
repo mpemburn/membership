@@ -53,7 +53,7 @@
                             <div id="name_protected" class="w-2/3 text-gray-600 font-normal hidden">
                                 <b>NOTICE:</b> This <b>Role Name</b> is flagged as protected and cannot be changed.
                             </div>
-                            <div id="name_caution" class="w-2/3 text-red-600 font-normal hidden">
+                            <div v-if="showNameChangeWarning" id="name_caution" class="w-2/3 text-red-600 font-normal">
                                 <b>CAUTION:</b> Changing the <b>Role Name</b> may affect existing permissions.
                             </div>
                         </div>
@@ -139,6 +139,7 @@ export default {
             roleId: null,
             currentRoleId: null,
             roleName: null,
+            currentRoleName: null,
             roles: [],
             permissions: [],
             headers: [
@@ -155,6 +156,8 @@ export default {
     watch: {
         roles(val) {
             this.refreshTable();
+        },
+        roleName(val) {
         }
     },
     methods: {
@@ -193,9 +196,16 @@ export default {
             this.permissions = [];
             axios.get('/api/roles/permissions?id=' + roleId)
                 .then(response => {
+                    let role = response.data.role;
                     this.populateEditorCheckboxes(response);
+
+                    this.roleId = role.id;
+                    this.roleName = role.name;
+                    this.currentRoleName = this.roleName;
+
                     this.modalContext = 'Edit';
                     this.modalTitle = 'Edit ' + this.roleName + ' Role';
+
                     this.showModal = true;
                 }).catch(error => {
                     this.showError(error);
@@ -210,11 +220,6 @@ export default {
             }
         },
         populateEditorCheckboxes(response) {
-            let role = response.data.role;
-
-            this.roleId = role.id;
-            this.roleName = role.name;
-
             let permissions = this.hydrate(response.data.role_permissions, true);
             let diff = this.hydrate(response.data.diff, false);
 
@@ -294,6 +299,12 @@ export default {
                 })
             }
         }
+    },
+    computed: {
+      showNameChangeWarning() {
+          return this.modalContext === 'Edit'
+            && this.currentRoleName !== this.roleName;
+      }
     },
     components: {
         EditButton,
