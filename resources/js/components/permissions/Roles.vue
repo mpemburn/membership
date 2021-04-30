@@ -35,8 +35,15 @@
             </tbody>
         </table>
         <section>
-            <component v-if="showModal" :is="modal" v-bind="{ title: modalTitle, width: 'full' }"
-                       @closeModal="showModal = false">
+            <vue-tailwind-modal
+                :showing="showModal"
+                @close="showModal = false"
+                :showClose="true"
+                :backgroundClose="true"
+            >
+                <div class="mb-1 text-xl font-bold">
+                    {{ modalTitle }}
+                </div>
                 <form v-on:submit="submitForm">
                     <div class="grid grid-cols-1 md:grid-cols-2">
                         <input type="hidden" name="role_id" :value="roleId"/>
@@ -71,7 +78,7 @@
 
                 <div class="text-right mt-4">
                     <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
-                    <button @click="showModal = false"
+                    <button @click="closeModal()"
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
                     </button>
@@ -84,17 +91,21 @@
                         Update
                     </button>
                 </div>
-            </component>
+            </vue-tailwind-modal>
         </section>
         <section>
-            <component v-if="showConfirm" :is="modal" v-bind="{ title: 'Delete', width: 'full' }"
-                       @closeModal="showConfirm = false">
+            <vue-tailwind-modal
+                :showing="showConfirm"
+                @close="showConfirm = false"
+                :showClose="true"
+                :backgroundClose="true"
+            >
                 <div>
                     {{ confirmMessage }}
                 </div>
                 <div class="text-center mt-4">
                     <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
-                    <button @click="showConfirm = false"
+                    <button @click="closeModal()"
                             class="modal-close ml-3 rounded px-3 py-1 bg-gray-300 hover:bg-gray-200 focus:shadow-outline focus:outline-none">
                         Cancel
                     </button>
@@ -103,7 +114,7 @@
                         Okay
                     </button>
                 </div>
-            </component>
+            </vue-tailwind-modal>
         </section>
     </div>
 </template>
@@ -185,7 +196,7 @@ export default {
                 .then(response => {
                     this.populateEditorCheckboxes(response);
                     this.modalContext = 'Edit';
-                    this.modalTitle = 'Edit Role';
+                    this.modalTitle = 'Edit ' + this.roleName + ' Role';
                     this.showModal = true;
                 }).catch(error => {
                     this.showError(error);
@@ -217,6 +228,11 @@ export default {
                 this.updateRole()
             }
 
+        },
+        closeModal() {
+            this.showModal = false;
+            this.showConfirm = false;
+            this.errorMessage = null;
         },
         createRole() {
             this.errorMessage = null;
