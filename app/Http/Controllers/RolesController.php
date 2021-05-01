@@ -53,13 +53,15 @@ class RolesController extends Controller
 
         $allPermissions = Permission::all();
         $rolePermissions = $role->first()->permissions;
+        $protectedRoles = env('PROTECTED_ROLES');
 
         return response()->json([
             'success' => true,
             'role' => $role->first(),
             'role_permissions' => $rolePermissions,
             'all_permissions' => $allPermissions,
-            'diff' => $allPermissions->diff($rolePermissions)
+            'diff' => $allPermissions->diff($rolePermissions),
+            'is_protected' => $protectedRoles ? in_array($role->first()->name, explode(',', $protectedRoles)) : false
         ]);
     }
 

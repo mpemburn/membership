@@ -27,14 +27,19 @@
                     </component>
                 </td>
                 <td>
-                    <component v-if="! role.protected" :is="deleteButton" v-bind="{ deleteId: role.id }"
-                               @messageFromDeleteButton="deleteButtonMessageRecieved">Delete
+                    <component
+                        :is="deleteButton"
+                        :disabled="role.protected"
+                        v-bind="{ deleteId: role.id }"
+                        @messageFromDeleteButton="deleteButtonMessageRecieved"
+                    >Delete
                     </component>
                 </td>
             </tr>
             </tbody>
         </table>
         <section>
+            <!--  Edit Dialog-->
             <vue-tailwind-modal
                 :showing="showModal"
                 @close="showModal = false"
@@ -49,8 +54,14 @@
                         <input type="hidden" name="role_id" :value="roleId"/>
                         <div class="form-group font-bold">
                             <div>Role Name:</div>
-                            <input type="text" name="role_name" v-model="roleName"/>
-                            <div id="name_protected" class="w-2/3 text-gray-600 font-normal hidden">
+                            <input
+                                class=" disabled:opacity-50"
+                                type="text"
+                                name="role_name"
+                                v-model="roleName"
+                                :disabled="editDisabled"
+                            />
+                            <div v-if="editDisabled" id="name_protected" class="w-2/3 text-gray-600 font-normal">
                                 <b>NOTICE:</b> This <b>Role Name</b> is flagged as protected and cannot be changed.
                             </div>
                             <div v-if="showNameChangeWarning" id="name_caution" class="w-2/3 text-red-600 font-normal">
@@ -93,6 +104,7 @@
                 </div>
             </vue-tailwind-modal>
         </section>
+        <!-- Confirm Dialog-->
         <section>
             <vue-tailwind-modal
                 :showing="showConfirm"
@@ -134,6 +146,7 @@ export default {
             showConfirm: false,
             modalContext: null,
             modalTitle: null,
+            editDisabled: false,
             confirmMessage: null,
             errorMessage: null,
             roleId: null,
@@ -178,7 +191,7 @@ export default {
                             'id': role.id,
                             'name': role.name,
                             'permissions': role.permissions,
-                            'protected': protectedRoles.includes(role.name)
+                            'protected': this.protectedRoles.includes(role.name)
                         });
                     });
                 });
@@ -210,6 +223,7 @@ export default {
 
                     this.modalContext = 'Edit';
                     this.modalTitle = 'Edit ' + this.roleName + ' Role';
+                    this.editDisabled = response.data.is_protected;
 
                     this.showModal = true;
                 }).catch(error => {
