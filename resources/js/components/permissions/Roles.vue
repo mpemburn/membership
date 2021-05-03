@@ -212,7 +212,7 @@ export default {
             this.roleId = roleId;
             this.roleName = null;
             this.permissions = [];
-            axios.get('/api/roles/permissions?id=' + roleId)
+            axios.get('/api/roles/show?id=' + roleId)
                 .then(response => {
                     let role = response.data.role;
                     this.populateEditorCheckboxes(response);
@@ -259,7 +259,7 @@ export default {
         },
         createRole() {
             this.errorMessage = null;
-            axios.post('/api/roles/create', {
+            axios.post('/api/roles', {
                 name: this.roleName,
                 role_permissions: this.permissions
             }).then(response => {

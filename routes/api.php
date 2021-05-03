@@ -24,11 +24,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:api')->group( function () {
-    Route::get('/roles', RolesController::class . '@index');
-    Route::get('/roles/permissions', RolesController::class . '@getPermissionsForRole');
-    Route::post('/roles/create', RolesController::class . '@create');
-    Route::put('/roles/update', RolesController::class . '@update');
-    Route::delete('/roles/delete', RolesController::class . '@delete');
+    Route::apiResource('roles', RolesController::class );
 
     Route::get('/permissions', PermissionsController::class . '@index');
     Route::get('/permissions/{id}', PermissionsController::class . '@show');
@@ -39,7 +35,7 @@ Route::middleware('auth:api')->group( function () {
     Route::apiResource('user_roles', UserRolesController::class)
         ->only('index', 'show', 'store');
 
-    
+
     Route::get('/members', MembersController::class . '@index');
     Route::post('/member', MembersController::class . '@store');
     Route::post('/member_email', MembersController::class . '@addEmailToMember');

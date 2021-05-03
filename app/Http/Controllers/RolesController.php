@@ -45,7 +45,7 @@ class RolesController extends Controller
         ]);
     }
 
-    public function getPermissionsForRole(Request $request): JsonResponse
+    public function show(Request $request): JsonResponse
     {
         $role = Role::where('id', '=', $request->get('id'))
             ->with('permissions')
@@ -65,7 +65,7 @@ class RolesController extends Controller
         ]);
     }
 
-    public function create(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         $response = $this->crudService->create($request, new RoleUi());
 
@@ -95,14 +95,9 @@ class RolesController extends Controller
         return response()->json(['error' => $this->validator->getMessage()], 400);
     }
 
-    public function delete(Request $request): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
         return $this->crudService->delete($request, new RoleUi());
-    }
-
-    public function getPermissions(Request $request): JsonResponse
-    {
-        return $this->rolesService->retrievePermissionsForRole($request);
     }
 
     protected function processPermissions(Request $request, JsonResponse $response): JsonResponse
