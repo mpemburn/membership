@@ -282,6 +282,7 @@ export default {
                         }
                     });
                     this.showModal = false;
+                    this.readRolesFromAPI();
                 }
             }).catch(error => {
                 this.showError(error);
