@@ -201,7 +201,7 @@ export default {
             this.errorMessage = null;
         },
         createPermission() {
-            axios.post('/api/permissions/create', {
+            axios.post('/api/permissions', {
                 name: this.permissionName,
                 permission_permissions: this.permissions
             }).then(response => {

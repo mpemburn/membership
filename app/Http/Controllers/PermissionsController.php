@@ -31,7 +31,7 @@ class PermissionsController extends Controller
         return response()->json(['success' => true, 'permission' => $permission]);
     }
 
-    public function create(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         return $this->crudService->create($request, new PermissionUi());
     }
@@ -41,7 +41,7 @@ class PermissionsController extends Controller
         return $this->crudService->update($request, new PermissionUi());
     }
 
-    public function delete(Request $request): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
         return $this->crudService->delete($request, new PermissionUi());
     }
