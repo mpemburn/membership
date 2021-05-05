@@ -138,6 +138,7 @@ class PermissionsCrudService
         } catch (\Exception $e) {
             $this->validator->addError($e->getMessage());
             Log::debug($e->getMessage());
+            $this->validator->addError('An error occurred: ' . $e->getMessage());
 
             return null;
         }
