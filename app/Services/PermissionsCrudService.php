@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -43,7 +44,7 @@ class PermissionsCrudService
 
     public function getProtectedRoles(): ?array
     {
-        return explode(',', env('PROTECTED_ROLES'));
+        return Config::get('rolevue.protected');
     }
 
     public function create(Request $request, UiInterface $model): JsonResponse

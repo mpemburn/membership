@@ -36,7 +36,7 @@ Route::get('/token', function () {
     !d($token);
 });
 
-Route::get('/modal', function () {
-    return view('vue-test', ['header' => 'head', 'slot' => 'slot']);
+Route::get('/config', function () {
+    !d(Config::get('rolevue.protected'));
 });
 

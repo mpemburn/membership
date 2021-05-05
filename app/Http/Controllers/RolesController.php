@@ -9,6 +9,7 @@ use App\Services\RolesService;
 use App\Services\ValidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -36,12 +37,12 @@ class RolesController extends Controller
             ->with('permissions')
             ->get();
 
-        $protectedRoles = env('PROTECTED_ROLES');
+        $protectedRoles = Config::get('rolevue.protected');
 
         return response()->json([
             'success' => true,
             'roles' => $roles,
-            'protectedRoles' => $protectedRoles ? explode(',', $protectedRoles) : []
+            'protectedRoles' => $protectedRoles ?: []
         ]);
     }
 
@@ -53,7 +54,7 @@ class RolesController extends Controller
 
         $allPermissions = Permission::all();
         $rolePermissions = $role->first()->permissions;
-        $protectedRoles = env('PROTECTED_ROLES');
+        $protectedRoles = Config::get('rolevue.protected');
 
         return response()->json([
             'success' => true,
@@ -61,7 +62,7 @@ class RolesController extends Controller
             'role_permissions' => $rolePermissions,
             'all_permissions' => $allPermissions,
             'diff' => $allPermissions->diff($rolePermissions),
-            'is_protected' => $protectedRoles ? in_array($role->first()->name, explode(',', $protectedRoles)) : false
+            'is_protected' => $protectedRoles && in_array($role->first()->name, $protectedRoles)
         ]);
     }
 
