@@ -24,12 +24,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:api')->group( function () {
-    Route::apiResource('roles', RolesController::class );
-
-    Route::apiResource('permissions', PermissionsController::class);
-
-    Route::apiResource('user_roles', UserRolesController::class)
-        ->only('index', 'show', 'store');
 
     Route::get('/members', MembersController::class . '@index');
     Route::post('/member', MembersController::class . '@store');

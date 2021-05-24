@@ -13,12 +13,11 @@
         <!-- Styles -->
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="{{ asset("vendor/rolevue/css/rolevue.css") }}">
 
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}" defer></script>
-        <script type="text/javascript">
-            window.csrf_token = "{{ csrf_token() }}"
-        </script>
+        <script src="{{ asset("vendor/rolevue/js/rolevue.js") }}" defer></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

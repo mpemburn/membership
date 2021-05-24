@@ -167,6 +167,7 @@ return [
          */
         Spatie\Permission\PermissionServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
+        Mpemburn\RoleVue\RoleVueServiceProvider::class,
 
         /*
          * Application Service Providers...

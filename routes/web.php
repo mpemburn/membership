@@ -24,25 +24,13 @@ Route::group(['middleware' => 'auth'], function () {
         return view('dashboard');
     })->name('dashboard');
 
-//    Route::get('/roles', AdminController::class . '@roles')->name('roles');
-    Route::get('/permissions', AdminController::class . '@permissions')->name('permissions');
-    Route::get('/user_roles', AdminController::class . '@userRoles')->name('user_roles');
-
     Route::get('/members', function () {
         return view('members.index');
     })->name('members.list');
-    Route::get('/roles', function () {
-        return view('roles.index');
-    })->name('roles');
 });
 
 Route::get('test', function () {
     MigrationHelper::run();
 });
-
-//// Get Vue routes
-//Route::get('{any}', function () {
-//    return view('layouts.vue-app');
-//})->where('any','.*');
 
 require __DIR__ . '/auth.php';

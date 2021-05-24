@@ -20,43 +20,11 @@ import VueTailwindModal from "vue-tailwind-modal"
 Vue.component("VueTailwindModal", VueTailwindModal)
 
 Vue.component('edit-button', require('./components/buttons/EditButton.vue').default);
-Vue.component('edit-button', require('./components/buttons/EditButton.vue').default);
 Vue.component('delete-button', require('./components/buttons/DeleteButton.vue').default);
 Vue.component('members-all', require('./components/members/AllMembers.vue').default);
-Vue.component('roles-all', require('./components/permissions/Roles.vue').default);
-Vue.component('permissions-all', require('./components/permissions/Permissions.vue').default);
-Vue.component('user-roles-all', require('./components/permissions/UserRoles.vue').default);
 
 Vue.mixin({
     methods: {
-        hydrate(entities, shouldCheck) {
-            let results = [];
-
-            entities.forEach(entity => {
-                let checkbox = {
-                    id: entity.id,
-                    name: entity.name,
-                    checked: shouldCheck
-                }
-                results.push(checkbox);
-            });
-
-            return results;
-        },
-        showError(error) {
-            if (! error || this.errorMessage === undefined) {
-
-                return;
-            }
-
-            if (error.response.data.error) {
-                this.errorMessage = 'Error: ' + error.response.data.error;
-
-                return;
-            }
-
-            this.handleUnauthenticated(error.response.data);
-        },
         handleUnauthenticated(responseData) {
             if (responseData.message && responseData.message === 'Unauthenticated.') {
                 this.errorMessage = 'Error: Your session has timed out...reloading.';
