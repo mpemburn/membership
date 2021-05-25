@@ -25,6 +25,34 @@ Vue.component('members-all', require('./components/members/AllMembers.vue').defa
 
 Vue.mixin({
     methods: {
+        hydrate(entities, shouldCheck) {
+            let results = [];
+
+            entities.forEach(entity => {
+                let checkbox = {
+                    id: entity.id,
+                    name: entity.name,
+                    checked: shouldCheck
+                }
+                results.push(checkbox);
+            });
+
+            return results;
+        },
+        showError(error) {
+            if (! error || this.errorMessage === undefined) {
+
+                return;
+            }
+
+            if (error.response.data.error) {
+                this.errorMessage = 'Error: ' + error.response.data.error;
+
+                return;
+            }
+
+            this.handleUnauthenticated(error.response.data);
+        },
         handleUnauthenticated(responseData) {
             if (responseData.message && responseData.message === 'Unauthenticated.') {
                 this.errorMessage = 'Error: Your session has timed out...reloading.';

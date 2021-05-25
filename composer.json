@@ -17,7 +17,7 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.2",
         "laravelcollective/html": "^6.2",
-        "mpemburn/rolevue": "^1.0",
+        "mpemburn/rolevue": "^1.0.1",
         "spatie/laravel-permission": "^4.0"
     },
     "require-dev": {

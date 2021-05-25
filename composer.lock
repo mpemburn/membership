@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0aa0d52fec0fce9a0697e0606ebcb485",
+    "content-hash": "b74ddf05f34c185f8b1fe429ea9a49d7",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -978,16 +978,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v8.42.1",
+            "version": "v8.43.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "41ec4897a70eb8729cf0ff34a8354413c54e42a6"
+                "reference": "3ec63771a07e251f4fb6c7ef2411a79a314bba65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/41ec4897a70eb8729cf0ff34a8354413c54e42a6",
-                "reference": "41ec4897a70eb8729cf0ff34a8354413c54e42a6",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/3ec63771a07e251f4fb6c7ef2411a79a314bba65",
+                "reference": "3ec63771a07e251f4fb6c7ef2411a79a314bba65",
                 "shasum": ""
             },
             "require": {
@@ -1142,7 +1142,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2021-05-19T13:03:18+00:00"
+            "time": "2021-05-25T13:06:44+00:00"
         },
         {
             "name": "laravel/passport",
@@ -2044,16 +2044,16 @@
         },
         {
             "name": "mpemburn/rolevue",
-            "version": "v1.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpemburn/rolevue.git",
-                "reference": "ffa987b9ac72a0dbf0adc7445e537eecab4fccd3"
+                "reference": "001bfd632862521180e21cad959faf2a5a7f2fe0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpemburn/rolevue/zipball/ffa987b9ac72a0dbf0adc7445e537eecab4fccd3",
-                "reference": "ffa987b9ac72a0dbf0adc7445e537eecab4fccd3",
+                "url": "https://api.github.com/repos/mpemburn/rolevue/zipball/001bfd632862521180e21cad959faf2a5a7f2fe0",
+                "reference": "001bfd632862521180e21cad959faf2a5a7f2fe0",
                 "shasum": ""
             },
             "require": {
@@ -2096,9 +2096,9 @@
             ],
             "support": {
                 "issues": "https://github.com/mpemburn/rolevue/issues",
-                "source": "https://github.com/mpemburn/rolevue/tree/v1.0"
+                "source": "https://github.com/mpemburn/rolevue/tree/v1.0.1"
             },
-            "time": "2021-05-24T20:50:43+00:00"
+            "time": "2021-05-25T13:40:00+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -6885,16 +6885,16 @@
         },
         {
             "name": "doctrine/cache",
-            "version": "1.11.2",
+            "version": "1.11.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/cache.git",
-                "reference": "9c53086695937c50c47936ed86d96150ffbcf60d"
+                "reference": "3bb5588cec00a0268829cc4a518490df6741af9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/cache/zipball/9c53086695937c50c47936ed86d96150ffbcf60d",
-                "reference": "9c53086695937c50c47936ed86d96150ffbcf60d",
+                "url": "https://api.github.com/repos/doctrine/cache/zipball/3bb5588cec00a0268829cc4a518490df6741af9d",
+                "reference": "3bb5588cec00a0268829cc4a518490df6741af9d",
                 "shasum": ""
             },
             "require": {
@@ -6964,7 +6964,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/cache/issues",
-                "source": "https://github.com/doctrine/cache/tree/1.11.2"
+                "source": "https://github.com/doctrine/cache/tree/1.11.3"
             },
             "funding": [
                 {
@@ -6980,7 +6980,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-20T14:57:29+00:00"
+            "time": "2021-05-25T09:01:55+00:00"
         },
         {
             "name": "doctrine/dbal",

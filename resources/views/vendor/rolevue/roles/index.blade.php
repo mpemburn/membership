@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
     <div id="acl_wrapper" data-context="permissions" class="table-wrapper">
-        <section id="app">
+        <section id="rolevue">
             <roles-all></roles-all>
         </section>
     </div>

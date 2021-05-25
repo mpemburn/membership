@@ -45,6 +45,7 @@ export default {
                 {text: "Coven", value: "coven", filter: this.covenFilter()},
                 {text: "Degree", value: "degree"},
             ],
+            covens: []
         };
     },
     watch: {
@@ -74,15 +75,15 @@ export default {
         covenFilter() {
             let header = $('[data-id="coven"]');
             console.log(header);
+            return '';
         },
         readDataFromAPI() {
-            this.members = [];
             axios.get('/api/members')
                 .then((response) => {
                     if (! response.data.members) {
                         return;
                     }
-                    this.covens = response.data.covens;
+                    // this.covens = response.data.covens;
                     // console.log(response.data.degrees);
                     // console.log(this.members);
                     response.data.members.forEach(member => {
@@ -99,12 +100,21 @@ export default {
                             }
                         );
                     });
+                    console.log(this.members);
 
                 });
         },
+        initDataTable() {
+            this.dataTable = $('#members-table').DataTable({
+                pageLength: 100,
+                lengthMenu: [10, 25, 50, 75, 100],
+            });
+        },
+    },
+    updated() {
+        this.initDataTable()
     },
     mounted() {
-        this.dataTable = $('#members-table').DataTable({});
         this.readDataFromAPI();
     },
 };
