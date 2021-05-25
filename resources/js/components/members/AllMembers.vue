@@ -2,14 +2,25 @@
     <div class="">
         <table id="members-table" class="stripe">
             <thead>
-            <tr>
-                <th v-for="header in headers">{{ header.text }}</th>
-            </tr>
+                <tr>
+                    <th v-for="header in headers">{{ header.text }}</th>
+                </tr>
             </thead>
             <tr>
                 <th v-for="header in headers" :data-id="header.value" style="background-color: white">{{ header.filter }}</th>
             </tr>
             <tbody>
+                <tr v-for="member in members">
+                    <td>{{ member.name }}</td>
+                    <td>{{ member.addrress }}</td>
+                    <td>{{ member.city }}</td>
+                    <td>{{ member.state }}</td>
+                    <td>{{ member.zip }}</td>
+                    <td>{{ member.phone }}</td>
+                    <td>{{ member.email }}</td>
+                    <td>{{ member.coven }}</td>
+                    <td>{{ member.degree }}</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -65,30 +76,28 @@ export default {
             console.log(header);
         },
         readDataFromAPI() {
-            axios
-                .get("https://membership.test/api/members")
+            this.members = [];
+            axios.get('/api/members')
                 .then((response) => {
-                    this.members = response.data.members ? response.data.members: null;
-                    if (this.members === null) {
+                    if (! response.data.members) {
                         return;
                     }
                     this.covens = response.data.covens;
                     // console.log(response.data.degrees);
                     // console.log(this.members);
-                    this.members.forEach(member => {
-                        this.dataTable.row.add(
-                            [
-                                member.last_name + ', ' + member.first_name,
-                                this.getAddressPart(member.primary_address, 'address_1'),
-                                this.getAddressPart(member.primary_address, 'city'),
-                                this.getAddressPart(member.primary_address, 'state'),
-                                this.getAddressPart(member.primary_address, 'zip'),
-                                this.getPhone(member.primary_phone),
-                                this.getEmail(member.primary_email),
-                                this.getCoven(member.current_coven),
-                                this.getDegree(member.current_degree)
-                            ]
-                        ).draw(false);
+                    response.data.members.forEach(member => {
+                        this.members.push({
+                                name: member.last_name + ', ' + member.first_name,
+                                addrress: this.getAddressPart(member.primary_address, 'address_1'),
+                                city: this.getAddressPart(member.primary_address, 'city'),
+                                state: this.getAddressPart(member.primary_address, 'state'),
+                                zip: this.getAddressPart(member.primary_address, 'zip'),
+                                phone: this.getPhone(member.primary_phone),
+                                email: this.getEmail(member.primary_email),
+                                coven: this.getCoven(member.current_coven),
+                                degree: this.getDegree(member.current_degree)
+                            }
+                        );
                     });
 
                 });
